@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loginuicolors/HomePage.dart';
 import 'package:loginuicolors/login.dart';
 import 'package:loginuicolors/register.dart';
 
@@ -9,6 +10,7 @@ void main() {
     routes: {
       'register': (context) => MyRegister(),
       'login': (context) => MyLogin(),
+      'Home': (context) => HomePage(),
     },
   ));
 }
