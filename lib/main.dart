@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/HomePage.dart';
-import 'package:loginuicolors/login.dart';
-import 'package:loginuicolors/register.dart';
+import 'package:loginuicolors/pages/login.dart';
+import 'package:loginuicolors/pages/register.dart';
+
+
 
 void main() {
+
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyLogin(),
