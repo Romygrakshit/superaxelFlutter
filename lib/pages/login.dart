@@ -1,5 +1,6 @@
+
 import 'package:flutter/material.dart';
-import 'package:loginuicolors/services/enquiryService.dart';
+import 'package:loginuicolors/services/garagesService.dart';
 // import 'package:loginuicolors/circle_bg.dart';
 
 class MyLogin extends StatefulWidget {
@@ -10,7 +11,16 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
-  
+  TextEditingController _mob_number = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  final _loginKey = GlobalKey<FormState>();
+
+  login(BuildContext context) async {
+    var response =
+        GaragesService.signIn(context, _mob_number.text, _password.text);
+
+    // Navigator.pushNamed(context, 'Home');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,94 +48,102 @@ class _MyLoginState extends State<MyLogin> {
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: 35, right: 35),
-                        child: Column(
-                          children: [
-                            TextField(
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                  fillColor: Colors.grey.shade100,
-                                  filled: true,
-                                  hintText: "Mobile Number",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            TextField(
-                              style: TextStyle(),
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                  fillColor: Colors.grey.shade100,
-                                  filled: true,
-                                  hintText: "Password",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Sign in',
-                                  style: TextStyle(
-                                      fontSize: 27,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                                CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor:
-                                      Color.fromARGB(255, 255, 255, 255),
-                                  child: IconButton(
-                                      color: Color.fromARGB(255, 2, 2, 2),
-                                      onPressed: () {
-                                        Navigator.pushNamed(context, 'Home');
-                                      },
-                                      icon: Icon(
-                                        Icons.arrow_forward,
-                                      )),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 40,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, 'register');
-                                  },
-                                  child: Text(
-                                    'Sign Up',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        fontSize: 18),
-                                  ),
-                                  style: ButtonStyle(),
-                                ),
-                                TextButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      'Forgot Password',
-                                      style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        fontSize: 18,
-                                      ),
+                        child: Form(
+                          key: _loginKey,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: _mob_number,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                    fillColor: Colors.grey.shade100,
+                                    filled: true,
+                                    hintText: "Mobile Number",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
                                     )),
-                              ],
-                            )
-                          ],
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              TextFormField(
+                                style: TextStyle(),
+                                controller: _password,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                    fillColor: Colors.grey.shade100,
+                                    filled: true,
+                                    hintText: "Password",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    )),
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Sign in',
+                                    style: TextStyle(
+                                        fontSize: 27,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundColor:
+                                        Color.fromARGB(255, 255, 255, 255),
+                                    child: IconButton(
+                                        color: Color.fromARGB(255, 2, 2, 2),
+                                        onPressed: () {
+                                          login(context);
+                                        },
+                                        icon: Icon(
+                                          Icons.arrow_forward,
+                                        )),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pushReplacementNamed(context, 'register');
+                                    },
+                                    child: Text(
+                                      'Sign Up',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          fontSize: 18),
+                                    ),
+                                    style: ButtonStyle(),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {},
+                                      child: Text(
+                                        'Forgot Password',
+                                        style: TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          fontSize: 18,
+                                        ),
+                                      )),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],

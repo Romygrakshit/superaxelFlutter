@@ -1,3 +1,8 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class MyRegister extends StatefulWidget {
@@ -8,6 +13,30 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
+  TextEditingController _garageName = TextEditingController();
+  TextEditingController _mobNumber = TextEditingController();
+
+  File _image = File('');
+
+  bool imageloaded = false;
+
+  addImage() async {
+    try {
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result != null) {
+        _image = File(result.files.single.path.toString());
+      }
+
+      
+      imageloaded = true;
+
+      setState(() {});
+    } catch (error) {
+      log(error.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,20 +68,61 @@ class _MyRegisterState extends State<MyRegister> {
                         margin: EdgeInsets.only(left: 35, right: 35),
                         child: Column(
                           children: [
-                            TextField(
-                              style: TextStyle(color: Colors.black),
-                              decoration: InputDecoration(
-                                  fillColor: Colors.grey.shade100,
-                                  filled: true,
-                                  hintText: "Owner Name",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  )),
-                            ),
                             SizedBox(
                               height: 30,
                             ),
-                            TextField(
+                            imageloaded
+                                ? GestureDetector(
+                                    onTap: () => addImage(),
+                                    child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(125),
+                                            border: Border.all(
+                                                color: Colors.red, width: 2)),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(125),
+                                          child: Image.file(
+                                            _image,
+                                            fit: BoxFit.cover,
+                                            height: 250,
+                                            width: 250,
+                                          ),
+                                        )),
+                                  )
+                                : DottedBorder(
+                                    borderType: BorderType.Circle,
+                                    radius: const Radius.circular(10),
+                                    strokeCap: StrokeCap.round,
+                                    dashPattern: const [10, 4],
+                                    child: GestureDetector(
+                                      onTap: () => addImage(),
+                                      child: Container(
+                                        height: 250,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        width: 250,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(Icons.add_a_photo_outlined),
+                                              Text("Add Image"),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            TextFormField(
+                              controller: _garageName,
                               style: TextStyle(color: Colors.black),
                               decoration: InputDecoration(
                                   fillColor: Colors.grey.shade100,
@@ -65,7 +135,8 @@ class _MyRegisterState extends State<MyRegister> {
                             SizedBox(
                               height: 30,
                             ),
-                            TextField(
+                            TextFormField(
+                              controller: _mobNumber,
                               style: TextStyle(color: Colors.black),
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
@@ -169,7 +240,8 @@ class _MyRegisterState extends State<MyRegister> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, 'login');
+                                    Navigator.pushReplacementNamed(
+                                        context, 'login');
                                   },
                                   child: Text(
                                     'Sign In',
