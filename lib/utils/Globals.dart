@@ -1,3 +1,3 @@
 class Globals {
-  static const restApiUrl = "http://192.168.1.3:3000";
+  static const restApiUrl = "http://192.168.1.7:3000";
 }

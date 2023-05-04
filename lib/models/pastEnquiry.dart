@@ -13,7 +13,7 @@ class PastEnquiry {
   String offered_price;
   String date_time;
   String status;
-  String image_id;
+  String images_id;
   String delivery_boy;
   String? name;
   String? mobile_number;
@@ -32,7 +32,7 @@ class PastEnquiry {
     required this.offered_price,
     required this.date_time,
     required this.status,
-    required this.image_id,
+    required this.images_id,
     required this.delivery_boy,
     this.name,
     this.mobile_number,
@@ -55,7 +55,7 @@ class PastEnquiry {
       'offered_price': offered_price,
       'date_time': date_time,
       'status': status,
-      'image_id': image_id,
+      'images_id': images_id,
       'delivery_boy': delivery_boy,
       'name': name,
       'mobile_number': mobile_number,
@@ -78,7 +78,7 @@ class PastEnquiry {
       offered_price: map['offered_price'] as String,
       date_time: map['date_time'] as String,
       status: map['status'] as String,
-      image_id: map['image_id'] as String,
+      images_id: map['images_id'] as String,
       delivery_boy: map['delivery_boy'] as String,
       name: map['name'] != null ? map['name'] as String : null,
       mobile_number: map['mobile_number'] != null ? map['mobile_number'] as String : null,
