@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:loginuicolors/models/statesDecode.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,7 +48,22 @@ class GaragesService {
       Navigator.pushReplacementNamed(context, 'Home');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('authToken', decoded['data']['token']);
-    } 
+    }
+  }
+
+  static void getAllStates() async {
+    Uri responseUri = Uri.parse("$_baseUrl/states");
+    http.Response response = await http.get(responseUri);
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    List<StateDecode> allStates = [];
+    if (decoded["success"]) {
+      var states = decoded['data'];
+      for (var state in states) {
+        StateDecode newState = StateDecode.fromMap(state);
+        allStates.add(newState);
+      }
+      Globals.allStates = allStates;
+    }
   }
 }
- 

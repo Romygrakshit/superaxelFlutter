@@ -33,6 +33,7 @@ dependencies:
   shared_preferences: ^2.1.0
   dotted_border: ^2.0.0+3
   file_picker: ^5.2.5
+  geolocator: ^9.0.2
 
 
 dev_dependencies:

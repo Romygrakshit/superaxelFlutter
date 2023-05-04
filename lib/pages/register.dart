@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -17,8 +17,9 @@ class _MyRegisterState extends State<MyRegister> {
   TextEditingController _mobNumber = TextEditingController();
 
   File _image = File('');
-
+  late String lat, long;
   bool imageloaded = false;
+  bool location = false; 
 
   addImage() async {
     try {
@@ -28,13 +29,49 @@ class _MyRegisterState extends State<MyRegister> {
         _image = File(result.files.single.path.toString());
       }
 
-      
       imageloaded = true;
 
       setState(() {});
     } catch (error) {
       log(error.toString());
     }
+  }
+
+  Future<Position> _getCurrentLocation() async {
+   bool serviceEnabled;
+  LocationPermission permission;
+
+  // Test if location services are enabled.
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled don't continue
+    // accessing the position and request users of the 
+    // App to enable the location services.
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permissions are denied, next time you could try
+      // requesting permissions again (this is also where
+      // Android's shouldShowRequestPermissionRationale 
+      // returned true. According to Android guidelines
+      // your App should show an explanatory UI now.
+      return Future.error('Location permissions are denied');
+    }
+  }
+  
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately. 
+    return Future.error(
+      'Location permissions are permanently denied, we cannot request permissions.');
+  } 
+
+  // When we reach here, permissions are granted and we can
+  // continue accessing the position of the device.
+  return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -95,6 +132,7 @@ class _MyRegisterState extends State<MyRegister> {
                                 : DottedBorder(
                                     borderType: BorderType.Circle,
                                     radius: const Radius.circular(10),
+                                    color: Colors.white,
                                     strokeCap: StrokeCap.round,
                                     dashPattern: const [10, 4],
                                     child: GestureDetector(
@@ -110,8 +148,15 @@ class _MyRegisterState extends State<MyRegister> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: const [
-                                              Icon(Icons.add_a_photo_outlined),
-                                              Text("Add Image"),
+                                              Icon(
+                                                Icons.add_a_photo_outlined,
+                                                color: Colors.white,
+                                              ),
+                                              Text(
+                                                "Add Image",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -205,6 +250,33 @@ class _MyRegisterState extends State<MyRegister> {
                                 // Handle selected value
                               },
                             ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            GestureDetector(
+                                onTap: () =>
+                                    _getCurrentLocation().then((value) {
+                                      lat = '${value.latitude}';
+                                      long = '${value.longitude}';
+                                      log(lat); 
+                                      log(long); 
+                                      location = true; 
+                                      setState(() {
+                                      });
+                                    }),
+                                child: Container(
+                                  child: Center(
+                                      child: Text(
+                                    "Pick Location",
+                                    style: TextStyle(fontSize: 18),
+                                  )),
+                                  height: 65,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all()),
+                                )),Text(location?'$lat and $long':"",style: TextStyle(color: Colors.white),),
                             SizedBox(
                               height: 40,
                             ),
