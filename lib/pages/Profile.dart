@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loginuicolors/utils/Globals.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -39,7 +40,7 @@ class _ProfileState extends State<Profile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Garage ID: 66',
+                          'Garage ID: ${Globals.garageId}',
                           style: TextStyle(
                               color: Color.fromARGB(255, 29, 29, 29),
                               fontSize: 14),
@@ -48,7 +49,7 @@ class _ProfileState extends State<Profile> {
                             height:
                                 4), // add space between the first and second text
                         Text(
-                          'Ahmed Garage',
+                          Globals.garageName,
                           style: TextStyle(
                               color: Color.fromARGB(255, 29, 29, 29),
                               fontWeight: FontWeight.bold,
@@ -66,12 +67,12 @@ class _ProfileState extends State<Profile> {
                               fontSize: 16),
                         ),
                         SizedBox(
-                          width: 220,
+                          width: 200,
                           child: Text(
                             style: TextStyle(
                                 color: Color.fromARGB(255, 29, 29, 29),
                                 fontSize: 16),
-                            "boriwali west 245, sindh, bangalore, karnataka",
+                            Globals.garageAddress,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),

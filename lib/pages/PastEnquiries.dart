@@ -18,6 +18,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
 
   testApi() async {
     List<PastEnquiry> newEnquiries = await EnquiryService.pastEnquiryList();
+     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
     log(enquiries.toString());
     first = false;
@@ -66,7 +67,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Enquiry Number: 65',
+                                    'Enquiry Number: ${enquiry.id}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 175, 175, 175),
@@ -76,7 +77,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       height:
                                           4), // add space between the first and second text
                                   Text(
-                                    ' left axel',
+                                    enquiry.axel,
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 239, 239, 239),
@@ -96,11 +97,12 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                         fontSize: 16),
                                   ),
                                   SizedBox(
-                                    width: 220,
+                                    width: 200,
                                     child: Text(
                                       style: TextStyle(
                                           color: Color.fromARGB(
                                               255, 239, 239, 239),
+                                          // color: Colors.blue,
                                           fontSize: 16),
                                       enquiry.address,
                                       maxLines: 2,
@@ -112,7 +114,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       height:
                                           4), // add space between the third and fourth text
                                   Text(
-                                    'Price: 5000',
+                                    'Price: ${enquiry.offered_price}',
                                     style: TextStyle(
                                         color: Color.fromARGB(255, 215, 0, 0),
                                         fontWeight: FontWeight.bold,

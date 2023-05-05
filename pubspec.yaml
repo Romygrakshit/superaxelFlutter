@@ -34,6 +34,7 @@ dependencies:
   dotted_border: ^2.0.0+3
   file_picker: ^5.2.5
   geolocator: ^9.0.2
+  open_street_map_search_and_pick: ^0.0.16
 
 
 dev_dependencies:

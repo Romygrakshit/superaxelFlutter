@@ -46,7 +46,7 @@ class _MyRegisterState extends State<MyRegister> {
   addImage() async {
     try {
       FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image);
+          await FilePicker.platform.pickFiles(type: FileType.image  );
       if (result != null) {
         _image = File(result.files.single.path.toString());
       }
@@ -331,7 +331,9 @@ class _MyRegisterState extends State<MyRegister> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
-                                    onPressed: () => null,
+                                    onPressed: () =>
+                                        Navigator.pushReplacementNamed(
+                                            context, 'login'),
                                     child: Text(
                                       'Sign In',
                                       textAlign: TextAlign.left,

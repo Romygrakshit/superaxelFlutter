@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:loginuicolors/models/cars.dart';
+import 'package:loginuicolors/models/companies.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -24,19 +26,8 @@ class GaragesService {
       String password,
       BuildContext context) async {
     Uri responseUri = Uri.parse('$_baseUrl/create');
-    // http.Response response = await http.post(responseUri, body: {
-    //   garage_name,
-    //   state,
-    //   city,
-    //   address,
-    //   mobile_number,
-    //   lat,
-    //   lng,
-    //   password
-    // });
-    // Map decoded = jsonDecode(response.body);
-    // log(decoded.toString());
     var stream =
+        // ignore: deprecated_member_use
         new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
     var request = new http.MultipartRequest("POST", responseUri);
@@ -59,9 +50,19 @@ class GaragesService {
     var response = await request.send();
 
     // listen for response
-    response.stream.transform(utf8.decoder).listen((value) {
+    response.stream.transform(utf8.decoder).listen((value) async {
       log(value);
-      Navigator.pushReplacementNamed(context, 'Home'); 
+      var decoded = jsonDecode(value);
+      Globals.garageId = decoded["data"]['garage']['id'];
+      Globals.garageName = decoded["data"]['garage']['garage_name'];
+      var add = decoded["data"]['garage']['address'];
+      var state = decoded["data"]['garage']['state'];
+      var city = decoded['data']['garage']['city'];
+      Globals.garageAddress = '$add,$city,$state';
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', decoded['data']['token']);
+      await prefs.setString('number', mobile_number);
+      Navigator.pushReplacementNamed(context, 'Home');
     });
   }
 
@@ -76,9 +77,16 @@ class GaragesService {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(decoded["message"])));
     if (decoded["success"]) {
-      Navigator.pushReplacementNamed(context, 'Home');
+      Globals.garageId = decoded["data"]['garage']['id'];
+      Globals.garageName = decoded["data"]['garage']['garage_name'];
+      var add = decoded["data"]['garage']['address'];
+      var state = decoded["data"]['garage']['state'];
+      var city = decoded['data']['garage']['city'];
+      Globals.garageAddress = '$add,$city,$state';
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('authToken', decoded['data']['token']);
+      await prefs.setString('number', mobile_number);
+      Navigator.pushReplacementNamed(context, 'Home');
     }
   }
 
@@ -89,12 +97,54 @@ class GaragesService {
     log(decoded.toString());
     List<StateDecode> allStates = [];
     if (decoded["success"]) {
-      var states = decoded['data'];
+      var states = decoded['data']['states'];
       for (var state in states) {
         StateDecode newState = StateDecode.fromMap(state);
         allStates.add(newState);
       }
+      var cars = decoded['data']['cars'];
+      List<Cars> allCars = [];
+      List<Companies> allCompanies = [];
+      var companies = decoded['data']['companies'];
+      for (var car in cars) {
+        Cars newCar = Cars.fromMap(car);
+        allCars.add(newCar);
+      }
+      for (var company in companies) {
+        Companies newCompany = Companies.fromMap(company);
+        allCompanies.add(newCompany);
+      }
+      Globals.allCars = allCars;
+      Globals.allCompanies = allCompanies;
       Globals.allStates = allStates;
     }
+  }
+
+  static Future<bool> verifyAuthToken() async {
+    var result = null;
+    try {
+      log('called verify auth');
+      final prefs = await SharedPreferences.getInstance();
+      log('getting number');
+      String? number = await prefs.getString('number');
+      log(number.toString());
+      if (number == null) return false;
+      Uri responseUri = Uri.parse('$_baseUrl/verify');
+      http.Response response =
+          await http.post(responseUri, body: {'number': number});
+      var decoded = jsonDecode(response.body);
+      log(decoded.toString());
+      Globals.garageId = decoded["data"]['id'];
+      Globals.garageName = decoded["data"]['garage_name'];
+      var add = decoded["data"]['address'];
+      var state = decoded["data"]['state'];
+      var city = decoded['data']['city'];
+      Globals.garageAddress = '$add,$city,$state';
+      result = decoded['success'];
+    } catch (err) {
+      log(err.toString());
+    }
+
+    return result;
   }
 }

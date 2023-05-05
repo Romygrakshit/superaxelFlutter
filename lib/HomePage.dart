@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:loginuicolors/pages/NewEnquiry.dart';
 import 'package:loginuicolors/pages/PastEnquiries.dart';
 import 'package:loginuicolors/pages/Profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,11 +15,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+   int _selectedIndex = 0;
   void _navigateBottomBar(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
+    await prefs.remove('number');
+    Navigator.pushReplacementNamed(context, 'login');
   }
 
   final List<Widget> _pages = [PastEnquiries(), NewEnquiries(), Profile()];
@@ -26,6 +36,17 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Color.fromARGB(255, 18, 18, 18),
           title: const Text('JB Super Axel'),
+          actions: [
+            IconButton(
+                onPressed: () => logout(),
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                )),
+            SizedBox(
+              width: 15,
+            )
+          ],
         ),
         body: Center(
           child: _pages.elementAt(_selectedIndex),
