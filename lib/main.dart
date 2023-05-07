@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:loginuicolors/HomePage.dart';
+import 'package:loginuicolors/pages/HomePage.dart';
 import 'package:loginuicolors/pages/login.dart';
 import 'package:loginuicolors/pages/loginSubadmin.dart';
 import 'package:loginuicolors/pages/register.dart';
