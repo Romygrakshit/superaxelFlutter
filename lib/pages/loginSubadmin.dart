@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:loginuicolors/pages/login.dart';
 import 'package:loginuicolors/services/garagesService.dart';
-// import 'package:loginuicolors/circle_bg.dart';
 
-class MyLogin extends StatefulWidget {
-  const MyLogin({Key? key}) : super(key: key);
+class LoginSubAdmin extends StatefulWidget {
+  const LoginSubAdmin({super.key});
 
   @override
-  _MyLoginState createState() => _MyLoginState();
+  State<LoginSubAdmin> createState() => _LoginSubAdminState();
 }
 
-class _MyLoginState extends State<MyLogin> {
-  TextEditingController _mob_number = TextEditingController();
+class _LoginSubAdminState extends State<LoginSubAdmin> {
+
+   TextEditingController _mob_number = TextEditingController();
   TextEditingController _password = TextEditingController();
   final _loginKey = GlobalKey<FormState>();
 
   login(BuildContext context) async {
- 
-        GaragesService.signIn(context, _mob_number.text, _password.text);
+    
+        GaragesService.loginSubAdmin(context, _mob_number.text, _password.text);
 
-    // Navigator.pushNamed(context, 'Home');
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,9 +84,9 @@ class _MyLoginState extends State<MyLogin> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   TextButton(
-                                      onPressed: ()=>Navigator.pushReplacementNamed(context, 'loginSubAdmin'),
+                                      onPressed: ()=>Navigator.pushReplacementNamed(context, 'login'),
                                       child: Text(
-                                        "Login as SubAdmin",
+                                        "Login as Garage Owner",
                                         style: TextStyle(
                                           decoration: TextDecoration.underline,
                                           color: Color.fromARGB(
@@ -174,35 +173,5 @@ class _MyLoginState extends State<MyLogin> {
         ),
       ),
     );
-  }
-}
-
-class RedBlackPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final height = size.height;
-    final width = size.width;
-    Paint paint = Paint();
-
-    Path mainBackground = Path();
-    mainBackground.addRect(Rect.fromLTRB(0, 0, width, height));
-    paint.color = Color.fromARGB(255, 184, 0, 0);
-    canvas.drawPath(mainBackground, paint);
-
-    Path ovalPath = Path();
-    ovalPath.moveTo(0, height * 0.2);
-    ovalPath.quadraticBezierTo(
-        width * 0.45, height * 0.25, width * 0.5, height * 0.5);
-
-    ovalPath.quadraticBezierTo(width * 0.6, height * 0.8, width * 0.1, height);
-    ovalPath.lineTo(0, height);
-    ovalPath.close();
-    paint.color = Colors.black;
-    canvas.drawPath(ovalPath, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return oldDelegate != this;
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/services/enquiryService.dart';
+import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
@@ -25,10 +26,15 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   double lat = 0;
   double long = 0;
   String address = '';
-  TextEditingController _price = TextEditingController();
+  bool CompanySelected = false;
+  bool CarSelected = false;
+  bool AxelSelected = false;
+  String priceOfEnquiry = '';
+  String left = '';
+  String right = '';
 
   void submitEnquiry(BuildContext context) async {
-     EnquiryService.createEnquiry(
+    EnquiryService.createEnquiry(
         files,
         address,
         lat.toString(),
@@ -36,8 +42,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         _selectedCompany.toString(),
         _selectedCar.toString(),
         _selectedAxel.toString(),
-        _price.text , context);
-    
+        priceOfEnquiry,
+        context);
   }
 
   pickFiles() async {
@@ -79,6 +85,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
               child: Form(
                 key: _formKey,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     DropdownButtonFormField(
@@ -94,56 +101,76 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                               child: Text("${company.company}"))
                       ],
                       hint: const Text('Select an option'),
-                      onChanged: (value) {
+                      onChanged: (value) async {
+                        List<Cars> cars =
+                            await GaragesService.getAllCars(value.toString());
+                        Globals.allCars = cars;
                         setState(() {
                           _selectedCompany = value.toString();
+                          CompanySelected = true;
                         });
                       },
                     ),
-                    DropdownButtonFormField(
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Select Car',
+                    if (CompanySelected)
+                      DropdownButtonFormField(
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Select Car',
+                        ),
+                        value: _selectedCar,
+                        items: [
+                          for (Cars car in Globals.allCars)
+                            DropdownMenuItem(
+                                value: car.car_name,
+                                child: Text("${car.car_name}"))
+                        ],
+                        hint: const Text('Select an option'),
+                        onChanged: (value) async {
+                          var response =
+                              await GaragesService.getPrices(value.toString());
+                          left = response[0];
+                          right = response[1];
+                          log('$left and $right');
+                          setState(() {
+                            _selectedCar = value.toString();
+                            CarSelected = true;
+                          });
+                        },
                       ),
-                      items: [
-                        for (Cars car in Globals.allCars)
-                          DropdownMenuItem(
-                              value: car.car_name,
-                              child: Text("${car.car_name}"))
-                      ],
-                      hint: const Text('Select an option'),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCar = value.toString();
-                        });
-                      },
-                    ),
-                    DropdownButtonFormField(
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Select Axel (left/right)',
+                    if (CarSelected)
+                      DropdownButtonFormField(
+                        value: _selectedAxel,
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Select Axel (left/right)',
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'Left', child: Text('Left')),
+                          DropdownMenuItem(value: 'Right', child: Text('Right'))
+                        ],
+                        hint: const Text('Select an option'),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == 'Left')
+                              priceOfEnquiry = left;
+                            else
+                              priceOfEnquiry = right;
+                            _selectedAxel = value as String?;
+                            AxelSelected = true;
+                          });
+                        },
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 'Left', child: Text('Left')),
-                        DropdownMenuItem(value: 'Right', child: Text('Right')),
-                      ],
-                      hint: const Text('Select an option'),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedAxel = value as String?;
-                        });
-                      },
+                    SizedBox(
+                      height: 20,
                     ),
-                    TextFormField(
-                      controller: _price,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Price:',
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
+                    if (AxelSelected)
+                      Center(
+                          child: Text(
+                        'Price : $priceOfEnquiry',
+                        style: TextStyle(fontSize: 30),
+                      )),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Column(
                           children: [
@@ -156,6 +183,15 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                               ),
                             ),
                             Text('${files.length} images selected'),
+                            Column(
+                              children: [
+                                for (var image in files)
+                                  Container(
+                                      margin: EdgeInsets.all(10),
+                                      height: 100,
+                                      child: Image.file(image))
+                              ],
+                            ),
                             Container(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 16.0),
@@ -167,17 +203,29 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 child: const Text('Pick Location'),
                               ),
                             ),
-                            Text(lat.toString()),
-                            Text(long.toString()),
+                            SizedBox(
+                              width: 300,
+                              child: Text(
+                                style: TextStyle(
+
+                                    // color: Colors.blue,
+                                    fontSize: 16),
+                                address,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: ElevatedButton(
-                        onPressed: () => submitEnquiry(context),
-                        child: const Text('Submit'),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ElevatedButton(
+                          onPressed: () => submitEnquiry(context),
+                          child: const Text('Submit'),
+                        ),
                       ),
                     ),
                   ],

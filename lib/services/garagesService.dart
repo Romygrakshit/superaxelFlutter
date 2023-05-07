@@ -86,6 +86,7 @@ class GaragesService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('authToken', decoded['data']['token']);
       await prefs.setString('number', mobile_number);
+      await prefs.setBool('garage', true);
       Navigator.pushReplacementNamed(context, 'Home');
     }
   }
@@ -120,31 +121,92 @@ class GaragesService {
     }
   }
 
-  static Future<bool> verifyAuthToken() async {
+  static verifyAuthToken() async {
     var result = null;
     try {
-      log('called verify auth');
       final prefs = await SharedPreferences.getInstance();
-      log('getting number');
+
       String? number = await prefs.getString('number');
       log(number.toString());
       if (number == null) return false;
       Uri responseUri = Uri.parse('$_baseUrl/verify');
-      http.Response response =
-          await http.post(responseUri, body: {'number': number});
+      http.Response response = await http.post(responseUri, body: {
+        'number': number,
+        'garage': await prefs.getBool('garage').toString()
+      });
       var decoded = jsonDecode(response.body);
       log(decoded.toString());
-      Globals.garageId = decoded["data"]['id'];
-      Globals.garageName = decoded["data"]['garage_name'];
-      var add = decoded["data"]['address'];
-      var state = decoded["data"]['state'];
-      var city = decoded['data']['city'];
-      Globals.garageAddress = '$add,$city,$state';
-      result = decoded['success'];
+      if (decoded['garage']) {
+        Globals.garageId = decoded["data"]['id'];
+        Globals.garageName = decoded["data"]['garage_name'];
+        var add = decoded["data"]['address'];
+        var state = decoded["data"]['state'];
+        var city = decoded['data']['city'];
+        Globals.garageAddress = '$add,$city,$state';
+      } else {
+        Globals.subAdminId = decoded["data"]['id'];
+        Globals.subAdminMobileNumber = decoded["data"]['mobile_number'];
+        Globals.subAdminName = decoded["data"]['name'];
+        Globals.subAdminState = decoded["data"]['state'];
+      }
+      result = decoded;
     } catch (err) {
       log(err.toString());
     }
 
     return result;
+  }
+
+  static void loginSubAdmin(
+      BuildContext context, String mobile_number, String password) async {
+    Uri responseUri = Uri.parse("$_baseUrl/loginSubAdmin");
+    http.Response response = await http.post(responseUri,
+        body: {"mobile_number": mobile_number, "password": password});
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(decoded["message"])));
+    if (decoded["success"]) {
+      Globals.subAdminId = decoded["data"]['SubAdmin']['id'];
+      Globals.subAdminMobileNumber =
+          decoded["data"]['SubAdmin']['mobile_number'];
+      Globals.subAdminName = decoded["data"]['SubAdmin']['name'];
+      Globals.subAdminState = decoded["data"]['SubAdmin']['state'];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('authToken', decoded['data']['token']);
+      await prefs.setString('number', mobile_number);
+      await prefs.setBool('garage', false);
+      Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
+    }
+  }
+
+  static Future<List<Cars>> getAllCars(String Company) async {
+    Uri responseUri = Uri.parse('$_baseUrl/cars');
+    http.Response response =
+        await http.post(responseUri, body: {'company': Company});
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    List<Cars> cars = [];
+    var data = decoded['data'];
+    for (var temp in data) {
+      Cars newCar = Cars.fromMap(temp);
+      cars.add(newCar);
+    }
+    return cars;
+  }
+
+  static Future<List<String>> getPrices(String Car) async {
+    Uri responseUri = Uri.parse('$_baseUrl/price');
+    http.Response response = await http.post(responseUri, body: {'car': Car});
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    String left = decoded['data'][0]['left_axel_price'].toString();
+    String right = decoded['data'][0]['right_axel_price'].toString();
+    List<String> prices = [];
+    prices.add(left);
+    prices.add(right);
+    log(prices.toString());
+    return prices;
   }
 }

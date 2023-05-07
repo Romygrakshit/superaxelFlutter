@@ -10,5 +10,8 @@ class Globals {
   static int garageId = 0;
   static List<Cars> allCars = [];
   static List<Companies> allCompanies = [];
-  
+  static int subAdminId = 0;
+  static String subAdminName = '';
+  static String subAdminState = '';
+  static String subAdminMobileNumber = ''; 
 }

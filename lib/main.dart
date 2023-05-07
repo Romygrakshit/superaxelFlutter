@@ -2,9 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/HomePage.dart';
-import 'package:loginuicolors/pages/location.dart';
 import 'package:loginuicolors/pages/login.dart';
+import 'package:loginuicolors/pages/loginSubadmin.dart';
 import 'package:loginuicolors/pages/register.dart';
+import 'package:loginuicolors/pages/subAdminHome.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 
 getAllStates() async {
@@ -12,23 +13,33 @@ getAllStates() async {
 }
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
   getAllStates();
 
   Future<Widget> verifyToken() async {
-    log('verifying');
-    bool isVerified = await GaragesService.verifyAuthToken();
-    if (isVerified) {
-      return const HomePage();
-    } else {
+    var decoded = await GaragesService.verifyAuthToken();
+
+    if (decoded == false) {
+      log('creating login page');
       return const MyLogin();
     }
+
+    if (decoded['success']) {
+      if (decoded['garage']) {
+        log("creating home page");
+        return const HomePage();
+      } else {
+        log('creating admin home');
+        return SubAdminHome();
+      }
+    }
+
+    return MyLogin();
   }
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: 
-     FutureBuilder<Widget>(
+    home: FutureBuilder<Widget>(
       future: verifyToken(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -41,12 +52,13 @@ void main() {
           return snapshot.data ?? const MyLogin();
         }
       },
-    )
-    ,
+    ),
     routes: {
       'register': (context) => MyRegister(),
       'login': (context) => MyLogin(),
       'Home': (context) => HomePage(),
+      'loginSubAdmin': (context) => LoginSubAdmin(),
+      'HomeSubAdmin': (context) => SubAdminHome()
       // 'location':(context) => Location(),
     },
   ));

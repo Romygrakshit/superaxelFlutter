@@ -18,7 +18,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
 
   testApi() async {
     List<PastEnquiry> newEnquiries = await EnquiryService.pastEnquiryList();
-     newEnquiries = new List.from(newEnquiries.reversed);
+    newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
     log(enquiries.toString());
     first = false;
@@ -38,7 +38,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
         child: ListView.builder(
             itemCount: enquiries.length,
             itemBuilder: (context, index) {
-              PastEnquiry enquiry = enquiries[index]; 
+              PastEnquiry enquiry = enquiries[index];
               return Container(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(22),
@@ -76,13 +76,35 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   SizedBox(
                                       height:
                                           4), // add space between the first and second text
-                                  Text(
-                                    enquiry.axel,
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 239, 239, 239),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),
+                                  Container(
+                                    width: 200,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          enquiry.axel,
+                                          style: TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 239, 239, 239),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
+                                        ),
+                                        // SizedBox(width:100 ,),
+                                        Container(padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Color.fromARGB(
+                                                      255, 215, 0, 0)),borderRadius: BorderRadius.circular(10)),
+                                          child: Text(
+                                            enquiry.status.toUpperCase(),
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 215, 0, 0)),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(
                                       height:
