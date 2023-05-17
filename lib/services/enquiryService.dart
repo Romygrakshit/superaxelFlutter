@@ -36,7 +36,7 @@ class EnquiryService {
       String lng,
       String company,
       String car_name,
-      String axel,
+      String axel,String state,
       String offered_price,
       BuildContext context) async {
     var uri = Uri.parse('$_baseUrl/create');
@@ -45,6 +45,7 @@ class EnquiryService {
     request.fields['address'] = address;
     request.fields['lat'] = lat;
     request.fields['lng'] = lng;
+    request.fields['state'] = state; 
     request.fields['company'] = company;
     request.fields['car_name'] = car_name;
     request.fields['axel'] = axel;

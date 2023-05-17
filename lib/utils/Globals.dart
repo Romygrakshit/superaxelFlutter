@@ -3,7 +3,7 @@ import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/models/statesDecode.dart';
 
 class Globals {
-  static const restApiUrl = "http://192.168.1.3:3000";
+  static const restApiUrl = "http://192.168.1.8:3000";
   static List<StateDecode> allStates = [];
   static String garageName = '';
   static String garageAddress = '';
@@ -13,5 +13,5 @@ class Globals {
   static int subAdminId = 0;
   static String subAdminName = '';
   static String subAdminState = '';
-  static String subAdminMobileNumber = ''; 
+  static String subAdminMobileNumber = '';
 }

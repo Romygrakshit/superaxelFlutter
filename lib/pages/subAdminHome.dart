@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:loginuicolors/pages/NewEnquiry.dart';
-import 'package:loginuicolors/pages/Profile.dart';
-import 'package:loginuicolors/pages/SubAdminGifts.dart';
 import 'package:loginuicolors/pages/SubAdminProfile.dart';
 import 'package:loginuicolors/pages/createInventory.dart';
+import 'package:loginuicolors/pages/subAdminEnquiries.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SubAdminHome extends StatefulWidget {
@@ -31,8 +29,8 @@ class _SubAdminHomeState extends State<SubAdminHome> {
   }
 
   final List<Widget> _pages = [
+    SubAdminEnquiries(),
     CreateInventory(),
-    SubAdminGifts(),
     SubAdminProfile()
   ];
 
@@ -58,12 +56,12 @@ class _SubAdminHomeState extends State<SubAdminHome> {
               },
               tabs: const [
                 GButton(
-                  icon: Icons.add_box_rounded,
-                  text: 'Add Inventory',
+                  icon: Icons.card_giftcard_sharp,
+                  text: 'Enquiries',
                 ),
                 GButton(
-                  icon: Icons.card_giftcard_sharp,
-                  text: 'Gifts',
+                  icon: Icons.add_box_rounded,
+                  text: 'Add Inventory',
                 ),
                 GButton(
                   icon: Icons.account_box_rounded,

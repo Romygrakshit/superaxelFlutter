@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:loginuicolors/pages/EditEnquiryBySubAdmin.dart';
 import 'package:loginuicolors/pages/HomePage.dart';
 import 'package:loginuicolors/pages/login.dart';
 import 'package:loginuicolors/pages/loginSubadmin.dart';
@@ -58,7 +59,8 @@ void main() {
       'login': (context) => MyLogin(),
       'Home': (context) => HomePage(),
       'loginSubAdmin': (context) => LoginSubAdmin(),
-      'HomeSubAdmin': (context) => SubAdminHome()
+      'HomeSubAdmin': (context) => SubAdminHome(),
+      'EditEnqSubAdmin': (context) => EditEnqSubAdmin(),
       // 'location':(context) => Location(),
     },
   ));

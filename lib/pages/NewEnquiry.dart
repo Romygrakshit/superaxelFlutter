@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/companies.dart';
+import 'package:loginuicolors/models/statesDecode.dart';
 import 'package:loginuicolors/services/enquiryService.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
@@ -21,6 +22,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   String? _selectedCompany;
   String? _selectedCar;
   String? _selectedAxel;
+  String? _selectedState;
   List<File> files = [];
   bool isLocation = false;
   double lat = 0;
@@ -42,6 +44,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         _selectedCompany.toString(),
         _selectedCar.toString(),
         _selectedAxel.toString(),
+        _selectedState.toString(),
         priceOfEnquiry,
         context);
   }
@@ -146,20 +149,61 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         ),
                         items: const [
                           DropdownMenuItem(value: 'Left', child: Text('Left')),
-                          DropdownMenuItem(value: 'Right', child: Text('Right'))
+                          DropdownMenuItem(
+                              value: 'Right', child: Text('Right')),
+                          DropdownMenuItem(value: 'Both', child: Text('Both'))
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) {
                           setState(() {
                             if (value == 'Left')
                               priceOfEnquiry = left;
-                            else
+                            else if (value == 'Right')
                               priceOfEnquiry = right;
+                            else
+                              priceOfEnquiry = '\nLeft: $left\nRight: $right';
                             _selectedAxel = value as String?;
                             AxelSelected = true;
                           });
                         },
                       ),
+
+                    if (CarSelected)
+                      DropdownButtonFormField(
+                        value: _selectedState,
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Enter the State',
+                        ),
+                        items: [
+                          for (StateDecode state in Globals.allStates)
+                            DropdownMenuItem(
+                                value: state.state,
+                                child: Text("${state.state}"))
+                        ],
+                        hint: const Text('Select a State'),
+                        onChanged: (value) {
+                          _selectedState = value.toString();
+                        },
+                      ),
+                    //  DropdownButtonFormField(
+                    //           items: [
+                    //             for (StateDecode state in Globals.allStates)
+                    //               DropdownMenuItem(
+                    //                   value: state.state,
+                    //                   child: Text("${state.state}"))
+                    //           ],
+                    //           decoration: InputDecoration(
+                    //               fillColor: Colors.grey.shade100,
+                    //               filled: true,
+                    //               hintText: "Select State",
+                    //               border: OutlineInputBorder(
+                    //                 borderRadius: BorderRadius.circular(10),
+                    //               )),
+                    //           onChanged: (value) {
+                    //             dropDownValue = value.toString();
+                    //           },
+                    //         ),
                     SizedBox(
                       height: 20,
                     ),
@@ -167,7 +211,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       Center(
                           child: Text(
                         'Price : $priceOfEnquiry',
-                        style: TextStyle(fontSize: 30),
+                        style: TextStyle(fontSize: 25),
                       )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -183,6 +227,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                               ),
                             ),
                             Text('${files.length} images selected'),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: Text(
+                                  'If Uploaded Photos, we will provide guaranteed prices',
+                                  style: TextStyle(fontSize: 13),
+                                  textDirection: TextDirection.ltr,
+                                  maxLines: 2,
+                                )),
                             Column(
                               children: [
                                 for (var image in files)
