@@ -81,7 +81,12 @@ class _MyRegisterState extends State<MyRegister> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-    return await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // Assuming the first result is accurate
+
+
+
+    return position; 
   }
 
   @override
@@ -274,6 +279,7 @@ class _MyRegisterState extends State<MyRegister> {
                                   onTap: () => _getCurrentLocation(context)
                                           .then((value) {
                                         lat = '${value.latitude}';
+                                        
                                         long = '${value.longitude}';
                                         log(lat);
                                         log(long);
