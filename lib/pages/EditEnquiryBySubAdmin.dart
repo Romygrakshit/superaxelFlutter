@@ -1,15 +1,45 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/enquriyModel.dart';
+import 'package:loginuicolors/services/subAdminService.dart';
 
-class EditEnqSubAdmin extends StatelessWidget {
+class EditEnqSubAdmin extends StatefulWidget {
   EditEnqSubAdmin({super.key});
 
+  @override
+  State<EditEnqSubAdmin> createState() => _EditEnqSubAdminState();
+}
+
+class _EditEnqSubAdminState extends State<EditEnqSubAdmin> {
   final _newOfferedPrice = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
 
-  updateEnquiry() {
+  String status = 'pending';
 
-    
+  updateEnquiry(BuildContext context, Enquiry enq) async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Fill the new fields')));
+      return;
+    }
+    bool success = await SubAdminService.updateEnquiry(body: {
+      'id': enq.id.toString(),
+      'price': _newOfferedPrice.text.trim().toString(),
+      'status': status
+    });
+    if (success) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Enquiry Updated Successfully')));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error in updating enquiry')));
+    }
   }
 
   @override
@@ -52,21 +82,38 @@ class EditEnqSubAdmin extends StatelessWidget {
                   height: 20,
                 ),
                 DropdownButtonFormField(
+                    isDense: true,
+                    value: status,
                     decoration: InputDecoration(
                       labelText: 'Enter the new Status',
                       border: OutlineInputBorder(),
                     ),
                     items: [
                       DropdownMenuItem(
+                        value: 'pending',
                         child: Text('pending'),
                       ),
+                      DropdownMenuItem(
+                        value: 'Out for delivery',
+                        child: Text('Out for delivery'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Delivered',
+                        child: Text('Delivered'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Cancel',
+                        child: Text('Cancel'),
+                      ),
                     ],
-                    onChanged: null),
+                    onChanged: (value) {
+                      status = value.toString();
+                    }),
                 Center(
                   child: ElevatedButton(
-                      onPressed: () => updateEnquiry,
+                      onPressed: () => updateEnquiry(context, enqury),
                       child: Text('Submit Updates')),
-                ), 
+                ),
               ],
             ),
           ),

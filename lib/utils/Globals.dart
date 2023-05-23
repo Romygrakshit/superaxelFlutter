@@ -3,7 +3,7 @@ import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/models/statesDecode.dart';
 
 class Globals {
-  static const restApiUrl = "http://192.168.1.2:3000";
+  static const restApiUrl = "http://192.168.1.5:3000";
   static List<StateDecode> allStates = [];
   static String garageName = '';
   static String garageAddress = '';

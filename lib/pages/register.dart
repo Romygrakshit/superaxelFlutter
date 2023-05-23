@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/statesDecode.dart';
 import 'package:loginuicolors/services/garagesService.dart';
@@ -46,7 +47,7 @@ class _MyRegisterState extends State<MyRegister> {
   addImage() async {
     try {
       FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image  );
+          await FilePicker.platform.pickFiles(type: FileType.image);
       if (result != null) {
         _image = File(result.files.single.path.toString());
       }
@@ -81,12 +82,25 @@ class _MyRegisterState extends State<MyRegister> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     // Assuming the first result is accurate
 
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark placemark =
+          placemarks[0]; // Assuming the first result is accurate
 
+      String? state = placemark.administrativeArea;
+      String? city = placemark.locality;
 
-    return position; 
+      log(state.toString());
+      log(city.toString());
+    } catch (error) {
+      log(error.toString());
+    }
+    return position;
   }
 
   @override
@@ -279,7 +293,7 @@ class _MyRegisterState extends State<MyRegister> {
                                   onTap: () => _getCurrentLocation(context)
                                           .then((value) {
                                         lat = '${value.latitude}';
-                                        
+
                                         long = '${value.longitude}';
                                         log(lat);
                                         log(long);

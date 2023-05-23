@@ -49,4 +49,17 @@ class SubAdminService {
     }
     return dedcodedEnq;
   }
+
+  static Future updateEnquiry({Object? body}) async {
+    Uri responseUri = Uri.parse('$_baseUrl/updateEnq');
+    http.Response response = await http.post(responseUri, body: body);
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    log(response.statusCode.toString());
+    if (response.statusCode >= 200 || response.statusCode <= 300) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
