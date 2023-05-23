@@ -31,7 +31,7 @@ class SubAdminService {
     if (decoded['success']) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Success')));
+          .showSnackBar(SnackBar(content: Text('Created the new Inventory')));
     }
   }
 

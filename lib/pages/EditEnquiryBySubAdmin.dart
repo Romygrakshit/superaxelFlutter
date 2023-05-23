@@ -35,6 +35,7 @@ class _EditEnqSubAdminState extends State<EditEnqSubAdmin> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Enquiry Updated Successfully')));
       Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context)
