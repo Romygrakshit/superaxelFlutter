@@ -196,11 +196,15 @@ class GaragesService {
     return cars;
   }
 
-  static Future<List<String>> getPrices(String Car) async {
+  static Future<List<String>> getPrices(int carID, int garageID) async {
     Uri responseUri = Uri.parse('$_baseUrl/price');
-    http.Response response = await http.post(responseUri, body: {'car': Car});
+    print('Garage ID: ${garageID}');
+    print('Car: ${carID}');
+    http.Response response = await http.post(responseUri,
+        body: {'car': carID.toString(), 'gID': garageID.toString()});
     var decoded = jsonDecode(response.body);
     log(decoded.toString());
+    print('Prices list: ${decoded.toString()}');
     String left = decoded['data'][0]['left_axel_price'].toString();
     String right = decoded['data'][0]['right_axel_price'].toString();
     List<String> prices = [];

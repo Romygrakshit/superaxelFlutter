@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/pastEnquiry.dart';
 
+import 'package:loginuicolors/utils/Globals.dart';
 import '../services/enquiryService.dart';
 
 class PastEnquiries extends StatefulWidget {
@@ -17,7 +18,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
   bool first = true;
 
   testApi() async {
-    List<PastEnquiry> newEnquiries = await EnquiryService.pastEnquiryList();
+    List<PastEnquiry> newEnquiries =
+        await EnquiryService.pastEnquiryList(Globals.garageId);
     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
     log(enquiries.toString());
@@ -91,11 +93,14 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                               fontSize: 20),
                                         ),
                                         // SizedBox(width:100 ,),
-                                        Container(padding: EdgeInsets.all(5),
+                                        Container(
+                                          padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color: Color.fromARGB(
-                                                      255, 215, 0, 0)),borderRadius: BorderRadius.circular(10)),
+                                                      255, 215, 0, 0)),
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
                                           child: Text(
                                             enquiry.status.toUpperCase(),
                                             style: TextStyle(

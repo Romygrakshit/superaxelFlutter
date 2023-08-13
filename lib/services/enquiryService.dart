@@ -1,4 +1,4 @@
-  import 'dart:convert';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -10,11 +10,11 @@ import 'package:path/path.dart';
 class EnquiryService {
   static const String _baseUrl = '${Globals.restApiUrl}/enquires/api';
 
-  static Future<List<PastEnquiry>> pastEnquiryList() async {
+  static Future<List<PastEnquiry>> pastEnquiryList(int garageId) async {
     List<PastEnquiry> dedcodedEnq = [];
 
     try {
-      Uri responseUri = Uri.parse("$_baseUrl/list");
+      Uri responseUri = Uri.parse("$_baseUrl/list/${garageId}");
       http.Response response = await http.get(responseUri);
       Map decoded = jsonDecode(response.body);
       log(decoded.toString());
@@ -36,7 +36,8 @@ class EnquiryService {
       String lng,
       String company,
       String car_name,
-      String axel,String state,
+      String axel,
+      String state,
       String offered_price,
       BuildContext context) async {
     var uri = Uri.parse('$_baseUrl/create');
@@ -45,7 +46,7 @@ class EnquiryService {
     request.fields['address'] = address;
     request.fields['lat'] = lat;
     request.fields['lng'] = lng;
-    request.fields['state'] = state; 
+    request.fields['state'] = state;
     request.fields['company'] = company;
     request.fields['car_name'] = car_name;
     request.fields['axel'] = axel;
@@ -67,7 +68,7 @@ class EnquiryService {
       var decoded = jsonDecode(value);
       log(decoded.toString());
       if (decoded['success']) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar(); 
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Enquiry Created")));
         Navigator.pushReplacementNamed(context, 'Home');

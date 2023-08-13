@@ -20,9 +20,9 @@ class NewEnquiries extends StatefulWidget {
 class _NewEnquiriesState extends State<NewEnquiries> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedCompany;
-  String? _selectedCar;
+  int? _selectedCar;
   String? _selectedAxel;
-  String? _selectedState;
+  String? _selectedGarage;
   List<File> files = [];
   bool isLocation = false;
   double lat = 0;
@@ -44,7 +44,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         _selectedCompany.toString(),
         _selectedCar.toString(),
         _selectedAxel.toString(),
-        _selectedState.toString(),
+        _selectedGarage.toString(),
         priceOfEnquiry,
         context);
   }
@@ -124,18 +124,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         items: [
                           for (Cars car in Globals.allCars)
                             DropdownMenuItem(
-                                value: car.car_name,
-                                child: Text("${car.car_name}"))
+                                value: car.id, child: Text("${car.car_name}"))
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
-                          var response =
-                              await GaragesService.getPrices(value.toString());
+                          var response = await GaragesService.getPrices(
+                              int.parse(value.toString()), Globals.garageId);
                           left = response[0];
                           right = response[1];
                           log('$left and $right');
                           setState(() {
-                            _selectedCar = value.toString();
+                            _selectedCar = int.parse(value.toString());
                             CarSelected = true;
                           });
                         },
@@ -168,24 +167,24 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         },
                       ),
 
-                    if (CarSelected)
-                      DropdownButtonFormField(
-                        value: _selectedState,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          labelText: 'Enter the State',
-                        ),
-                        items: [
-                          for (StateDecode state in Globals.allStates)
-                            DropdownMenuItem(
-                                value: state.state,
-                                child: Text("${state.state}"))
-                        ],
-                        hint: const Text('Select a State'),
-                        onChanged: (value) {
-                          _selectedState = value.toString();
-                        },
-                      ),
+                    // if (CarSelected)
+                    //   DropdownButtonFormField(
+                    //     value: _selectedState,
+                    //     decoration: const InputDecoration(
+                    //       border: UnderlineInputBorder(),
+                    //       labelText: 'Enter the State',
+                    //     ),
+                    //     items: [
+                    //       for (StateDecode state in Globals.allStates)
+                    //         DropdownMenuItem(
+                    //             value: state.state,
+                    //             child: Text("${state.state}"))
+                    //     ],
+                    //     hint: const Text('Select a State'),
+                    //     onChanged: (value) {
+                    //       _selectedState = value.toString();
+                    //     },
+                    //   ),
                     //  DropdownButtonFormField(
                     //           items: [
                     //             for (StateDecode state in Globals.allStates)
