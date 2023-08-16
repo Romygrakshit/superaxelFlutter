@@ -22,7 +22,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   String? _selectedCompany;
   int? _selectedCar;
   String? _selectedAxel;
-  String? _selectedGarage;
   List<File> files = [];
   bool isLocation = false;
   double lat = 0;
@@ -44,7 +43,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         _selectedCompany.toString(),
         _selectedCar.toString(),
         _selectedAxel.toString(),
-        _selectedGarage.toString(),
         priceOfEnquiry,
         context);
   }
