@@ -31,28 +31,19 @@ class _MyRegisterState extends State<MyRegister> {
   String? dropDownValue;
 
   signUp(BuildContext context) async {
-    await GaragesService.signUp(
-        _image,
-        _garageName.text,
-        dropDownValue.toString(),
-        _city.text,
-        _address.text,
-        _mobNumber.text,
-        lat,
-        long,
-        _password.text,
-        context);
+    await GaragesService.signUp(_image, _garageName.text, dropDownValue.toString(), _city.text, _address.text,
+        _mobNumber.text, lat, long, _password.text, context);
   }
 
   addImage() async {
     try {
-      FilePickerResult? result =
-          await FilePicker.platform.pickFiles(type: FileType.image);
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image);
       if (result != null) {
-        _image = File(result.files.single.path.toString());
+        setState(() {
+          _image = File(result.files.single.path.toString());
+          imageloaded = true;
+        });
       }
-      imageloaded = true;
-      setState(() {});
     } catch (error) {
       log(error.toString());
     }
@@ -65,8 +56,7 @@ class _MyRegisterState extends State<MyRegister> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Turn on location\n")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Turn on location\n")));
       return Future.error('Location services are disabled.');
     }
 
@@ -79,18 +69,14 @@ class _MyRegisterState extends State<MyRegister> {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
     }
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     // Assuming the first result is accurate
 
     try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
-      Placemark placemark =
-          placemarks[0]; // Assuming the first result is accurate
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark placemark = placemarks[0]; // Assuming the first result is accurate
 
       String? state = placemark.administrativeArea;
       String? city = placemark.locality;
@@ -125,8 +111,7 @@ class _MyRegisterState extends State<MyRegister> {
               ),
               SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.28),
+                  padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.28),
                   child: Form(
                     key: _signUpKey,
                     child: Column(
@@ -145,13 +130,10 @@ class _MyRegisterState extends State<MyRegister> {
                                       child: Container(
                                           padding: const EdgeInsets.all(2),
                                           decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(125),
-                                              border: Border.all(
-                                                  color: Colors.red, width: 2)),
+                                              borderRadius: BorderRadius.circular(125),
+                                              border: Border.all(color: Colors.red, width: 2)),
                                           child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(125),
+                                            borderRadius: BorderRadius.circular(125),
                                             child: Image.file(
                                               _image,
                                               fit: BoxFit.cover,
@@ -170,14 +152,11 @@ class _MyRegisterState extends State<MyRegister> {
                                         onTap: () => addImage(),
                                         child: Container(
                                           height: 250,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
+                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                                           width: 250,
                                           child: Center(
                                             child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: const [
                                                 Icon(
                                                   Icons.add_a_photo_outlined,
@@ -185,8 +164,7 @@ class _MyRegisterState extends State<MyRegister> {
                                                 ),
                                                 Text(
                                                   "Add Image",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
+                                                  style: TextStyle(color: Colors.white),
                                                 ),
                                               ],
                                             ),
@@ -257,9 +235,7 @@ class _MyRegisterState extends State<MyRegister> {
                               DropdownButtonFormField(
                                 items: [
                                   for (StateDecode state in Globals.allStates)
-                                    DropdownMenuItem(
-                                        value: state.state,
-                                        child: Text("${state.state}"))
+                                    DropdownMenuItem(value: state.state, child: Text("${state.state}"))
                                 ],
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,
@@ -290,8 +266,7 @@ class _MyRegisterState extends State<MyRegister> {
                                 height: 30,
                               ),
                               GestureDetector(
-                                  onTap: () => _getCurrentLocation(context)
-                                          .then((value) {
+                                  onTap: () => _getCurrentLocation(context).then((value) {
                                         lat = '${value.latitude}';
 
                                         long = '${value.longitude}';
@@ -321,15 +296,11 @@ class _MyRegisterState extends State<MyRegister> {
                                 height: 40,
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sign Up',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 27,
-                                        fontWeight: FontWeight.w700),
+                                    style: TextStyle(color: Colors.white, fontSize: 27, fontWeight: FontWeight.w700),
                                   ),
                                   CircleAvatar(
                                     radius: 30,
@@ -347,20 +318,15 @@ class _MyRegisterState extends State<MyRegister> {
                                 height: 40,
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.pushReplacementNamed(
-                                            context, 'login'),
+                                    onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
                                     child: Text(
                                       'Sign In',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          color: Colors.white,
-                                          fontSize: 18),
+                                          decoration: TextDecoration.underline, color: Colors.white, fontSize: 18),
                                     ),
                                     style: ButtonStyle(),
                                   ),
@@ -396,8 +362,7 @@ class BlackRedPainter extends CustomPainter {
 
     Path ovalPath = Path();
     ovalPath.moveTo(0, height * 0.2);
-    ovalPath.quadraticBezierTo(
-        width * 0.45, height * 0.25, width * 0.5, height * 0.5);
+    ovalPath.quadraticBezierTo(width * 0.45, height * 0.25, width * 0.5, height * 0.5);
 
     ovalPath.quadraticBezierTo(width * 0.6, height * 0.8, width * 0.1, height);
     ovalPath.lineTo(0, height);

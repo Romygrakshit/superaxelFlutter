@@ -4,6 +4,7 @@ import 'package:loginuicolors/models/statesDecode.dart';
 
 class Globals {
   static const restApiUrl = "http://139.59.77.55:3000";
+  // static const restApiUrl = "https://superaxlecompany.in";
   static List<StateDecode> allStates = [];
   static String garageName = '';
   static String garageAddress = '';

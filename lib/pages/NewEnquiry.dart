@@ -27,30 +27,21 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   double lat = 0;
   double long = 0;
   String address = '';
-  bool CompanySelected = false;
-  bool CarSelected = false;
-  bool AxelSelected = false;
+  bool companySelected = false;
+  bool carSelected = false;
+  bool axelSelected = false;
   String priceOfEnquiry = '';
   String left = '';
   String right = '';
 
   void submitEnquiry(BuildContext context) async {
-    EnquiryService.createEnquiry(
-        files,
-        address,
-        lat.toString(),
-        long.toString(),
-        _selectedCompany.toString(),
-        _selectedCar.toString(),
-        _selectedAxel.toString(),
-        priceOfEnquiry,
-        context);
+    EnquiryService.createEnquiry(files, address, lat.toString(), long.toString(), _selectedCompany.toString(),
+        _selectedCar.toString(), _selectedAxel.toString(), priceOfEnquiry, context);
   }
 
   pickFiles() async {
     try {
-      FilePickerResult? result =
-          await FilePicker.platform.pickFiles(allowMultiple: true);
+      FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
 
       if (result != null) {
         files = result.paths.map((path) => File(path.toString())).toList();
@@ -68,14 +59,16 @@ class _NewEnquiriesState extends State<NewEnquiries> {
             body: OpenStreetMapSearchAndPick(
               center: LatLong(26.82, 75.85),
               onPicked: (pickedData) {
-                lat = pickedData.latLong.latitude;
-                long = pickedData.latLong.longitude;
-                address = pickedData.address;
-                log(pickedData.latLong.latitude.toString());
-                log(pickedData.latLong.longitude.toString());
-                log(pickedData.address);
-                isLocation = false;
-                setState(() {});
+                debugPrint("${pickedData.toString()}");
+                setState(() {
+                  lat = pickedData.latLong.latitude;
+                  long = pickedData.latLong.longitude;
+                  address = pickedData.address;
+                  log(pickedData.latLong.latitude.toString());
+                  log(pickedData.latLong.longitude.toString());
+                  log(pickedData.address);
+                  isLocation = false;
+                });
               },
               buttonText: "Pick Location",
             ),
@@ -97,22 +90,28 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       value: _selectedCompany,
                       items: [
                         for (Companies company in Globals.allCompanies)
-                          DropdownMenuItem(
-                              value: company.company,
-                              child: Text("${company.company}"))
+                          DropdownMenuItem(value: company.company, child: Text("${company.company}"))
                       ],
                       hint: const Text('Select an option'),
                       onChanged: (value) async {
-                        List<Cars> cars =
-                            await GaragesService.getAllCars(value.toString());
-                        Globals.allCars = cars;
                         setState(() {
+                          companySelected = false;
+                        });
+                        List<Cars> cars = await GaragesService.getAllCars(value.toString());
+                        setState(() {
+                          Globals.allCars = [];
                           _selectedCompany = value.toString();
-                          CompanySelected = true;
+                          carSelected = false;
+                          _selectedCar = null;
+                        });
+
+                        setState(() {
+                          companySelected = true;
+                          Globals.allCars = cars;
                         });
                       },
                     ),
-                    if (CompanySelected)
+                    if (companySelected)
                       DropdownButtonFormField(
                         decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
@@ -121,23 +120,26 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         value: _selectedCar,
                         items: [
                           for (Cars car in Globals.allCars)
-                            DropdownMenuItem(
-                                value: car.id, child: Text("${car.car_name}"))
+                            DropdownMenuItem(value: car.id, child: Text("${car.car_name}"))
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
-                          var response = await GaragesService.getPrices(
-                              int.parse(value.toString()), Globals.garageId);
+                          var response = await GaragesService.getPrices(int.parse(value.toString()), Globals.garageId);
+
+                          if (response.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No Prices Found')));
+                            return;
+                          }
                           left = response[0];
                           right = response[1];
                           log('$left and $right');
                           setState(() {
                             _selectedCar = int.parse(value.toString());
-                            CarSelected = true;
+                            carSelected = true;
                           });
                         },
                       ),
-                    if (CarSelected)
+                    if (carSelected)
                       DropdownButtonFormField(
                         value: _selectedAxel,
                         decoration: const InputDecoration(
@@ -146,8 +148,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         ),
                         items: const [
                           DropdownMenuItem(value: 'Left', child: Text('Left')),
-                          DropdownMenuItem(
-                              value: 'Right', child: Text('Right')),
+                          DropdownMenuItem(value: 'Right', child: Text('Right')),
                           DropdownMenuItem(value: 'Both', child: Text('Both'))
                         ],
                         hint: const Text('Select an option'),
@@ -160,12 +161,12 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             else
                               priceOfEnquiry = '\nLeft: $left\nRight: $right';
                             _selectedAxel = value as String?;
-                            AxelSelected = true;
+                            axelSelected = true;
                           });
                         },
                       ),
 
-                    // if (CarSelected)
+                    // if (carSelected)
                     //   DropdownButtonFormField(
                     //     value: _selectedState,
                     //     decoration: const InputDecoration(
@@ -204,7 +205,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                     SizedBox(
                       height: 20,
                     ),
-                    if (AxelSelected)
+                    if (axelSelected)
                       Center(
                           child: Text(
                         'Price : $priceOfEnquiry',
@@ -216,8 +217,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         Column(
                           children: [
                             Container(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () => pickFiles(),
                                 child: const Text('AddImages'),
@@ -238,19 +238,16 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             Column(
                               children: [
                                 for (var image in files)
-                                  Container(
-                                      margin: EdgeInsets.all(10),
-                                      height: 100,
-                                      child: Image.file(image))
+                                  Container(margin: EdgeInsets.all(10), height: 100, child: Image.file(image))
                               ],
                             ),
                             Container(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  isLocation = true;
-                                  setState(() {});
+                                  setState(() {
+                                    isLocation = true;
+                                  });
                                 },
                                 child: const Text('Pick Location'),
                               ),
