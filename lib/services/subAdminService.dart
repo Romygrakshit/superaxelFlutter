@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/enquriyModel.dart';
+import 'package:loginuicolors/models/product_subadmin.dart';
+import 'package:loginuicolors/services/api_services.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:http/http.dart' as http;
 
@@ -52,6 +54,39 @@ class SubAdminService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  static Future<List<ProductSUbadmin>> getProductEnquiryListSubAdmin(int subadminId) async {
+    try {
+      ApiServices apiServices = ApiServices(http.Client());
+
+      final result = await apiServices.postMethod(
+        body: {"sID": subadminId},
+        endPoint: '/subadmins/api/getProductEnqbyState',
+        parser: (json) {
+          // convert it to a list
+          return json;
+        },
+      );
+
+      var decoded = result;
+
+      debugPrint(decoded.toString());
+
+      var productEnquiryList = decoded["data"];
+
+      List<ProductSUbadmin> productEnquiryListSubAdmin = [];
+
+      for (var productEnquiry in productEnquiryList) {
+        ProductSUbadmin newProductEnquiry = ProductSUbadmin.fromMap(productEnquiry);
+        productEnquiryListSubAdmin.add(newProductEnquiry);
+      }
+
+      return productEnquiryListSubAdmin;
+    } catch (e) {
+      debugPrint("error is $e");
+      return [];
     }
   }
 }

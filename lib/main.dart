@@ -22,7 +22,7 @@ void main() {
 
     if (decoded == false) {
       log('creating login page');
-      return const MyLogin();
+      return MyLogin();
     }
 
     if (decoded['success']) {
@@ -50,7 +50,7 @@ void main() {
             ),
           );
         } else {
-          return snapshot.data ?? const MyLogin();
+          return snapshot.data ?? MyLogin();
         }
       },
     ),

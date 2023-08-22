@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:loginuicolors/models/cars.dart';
+import 'package:loginuicolors/models/category.dart';
 import 'package:loginuicolors/models/companies.dart';
+import 'package:loginuicolors/models/price.dart';
+import 'package:loginuicolors/services/api_services.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -56,12 +60,20 @@ class GaragesService {
     });
   }
 
-  static void signIn(BuildContext context, String mobileNumber, String password) async {
+  static Future<void> signIn(BuildContext context, String mobileNumber, String password) async {
     try {
-      Uri responseUri = Uri.parse("$_baseUrl/signIn");
-      http.Response response =
-          await http.post(responseUri, body: {"mobile_number": mobileNumber, "password": password});
-      var decoded = jsonDecode(response.body);
+      ApiServices apiServices = ApiServices(http.Client());
+
+      final result = await apiServices.postMethod(
+        body: {"mobile_number": mobileNumber, "password": password},
+        endPoint: '/garages/api/signIn',
+        parser: (json) {
+          // convert it to a list
+          return json;
+        },
+      );
+
+      var decoded = result;
       log(decoded.toString());
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(decoded["message"])));
@@ -80,6 +92,7 @@ class GaragesService {
       }
     } catch (e) {
       debugPrint("error: ${e.toString()}");
+      throw e;
     }
   }
 
@@ -167,18 +180,115 @@ class GaragesService {
     }
   }
 
-  static Future<List<Cars>> getAllCars(String Company) async {
-    Uri responseUri = Uri.parse('$_baseUrl/cars');
-    http.Response response = await http.post(responseUri, body: {'company': Company});
-    var decoded = jsonDecode(response.body);
-    log(decoded.toString());
-    List<Cars> cars = [];
-    var data = decoded['data'];
-    for (var temp in data) {
-      Cars newCar = Cars.fromMap(temp);
-      cars.add(newCar);
+  static Future<List<Cars>> getAllCars(String company) async {
+    try {
+      Uri responseUri = Uri.parse('$_baseUrl/cars');
+      http.Response response = await http.post(responseUri, body: {'company': company});
+      var decoded = jsonDecode(response.body);
+      log(decoded.toString());
+      List<Cars> cars = [];
+      var data = decoded['data'];
+      for (var temp in data) {
+        Cars newCar = Cars.fromMap(temp);
+        cars.add(newCar);
+      }
+      return cars;
+    } catch (e) {
+      debugPrint("error: ${e.toString()}");
+      return [];
     }
-    return cars;
+  }
+
+  static Future<List<CategoryItems>> getAllCategory() async {
+    try {
+      ApiServices apiServices = ApiServices(http.Client());
+
+      final result = await apiServices.getMethod(
+        queryParams: "/enquires/api/getCategory",
+        parser: (json) {
+          // convert it to a list
+          return (json['data'] as List)
+              // and map each entry to a CategoryItems object
+              .map((itemJson) => CategoryItems.fromMap(itemJson))
+              .toList();
+        },
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint("error: ${e.toString()}");
+      return [];
+    }
+  }
+
+  static Future<List<Price>> getProductPrice({
+    required int carId,
+    required int categoryId,
+    required int garageId,
+  }) async {
+    try {
+      ApiServices apiServices = ApiServices(http.Client());
+
+      final Map<String, dynamic> body = {"car": carId, "category": categoryId, "gID": garageId};
+
+      final result = await apiServices.postMethod(
+        body: body,
+        endPoint: "/garages/api/productprice",
+        parser: (json) {
+          // convert it to a list
+          return (json['data'] as List)
+              // and map each entry to a CategoryItems object
+              .map((itemJson) => Price.fromMap(itemJson))
+              .toList();
+        },
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint("error: ${e.toString()}");
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>> submitProduct({
+    required int carId,
+    required int categoryId,
+    required int garageId,
+    required int companyId,
+    required int price,
+  }) async {
+//     {
+//   "car_id":326,
+//   "category_id":8,
+//   "garage_id":86,
+//   "company_id":2,
+//   "price":3200
+// }
+    try {
+      ApiServices apiServices = ApiServices(http.Client());
+
+      final Map<String, dynamic> body = {
+        "car_id": carId,
+        "category_id": categoryId,
+        "garage_id": garageId,
+        "company_id": companyId,
+        "price": price
+      };
+
+      final result = await apiServices.postMethod(
+        body: body,
+        endPoint: "/enquires/api/createProductEnquiry",
+        parser: (json) {
+          // convert it to a list
+          return json;
+        },
+      );
+
+      return result;
+    } catch (e) {
+      debugPrint("error: ${e.toString()}");
+      return {};
+    }
   }
 
   static Future<List<String>> getPrices(int carID, int garageID) async {
