@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 // import 'package:loginuicolors/circle_bg.dart';
 
-class MyLogin extends StatefulWidget {
-  const MyLogin({Key? key}) : super(key: key);
+class MyLogin extends HookWidget {
+  MyLogin({Key? key}) : super(key: key);
 
-  @override
-  _MyLoginState createState() => _MyLoginState();
-}
-
-class _MyLoginState extends State<MyLogin> {
-  TextEditingController _mob_number = TextEditingController();
-  TextEditingController _password = TextEditingController();
   final _loginKey = GlobalKey<FormState>();
-
-  login(BuildContext context) async {
- 
-        GaragesService.signIn(context, _mob_number.text, _password.text);
-
-    // Navigator.pushNamed(context, 'Home');
-  }
-
   @override
   Widget build(BuildContext context) {
+    final mobNumberController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    final isLogin = useState(false);
+
+    Future<void> login(BuildContext context) async {
+      await GaragesService.signIn(context, mobNumberController.text, passwordController.text).then((value) => {
+            isLogin.value = false,
+          });
+    }
+
     return Container(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -40,8 +36,7 @@ class _MyLoginState extends State<MyLogin> {
               ),
               SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.5),
+                  padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.5),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -53,8 +48,14 @@ class _MyLoginState extends State<MyLogin> {
                             children: [
                               TextFormField(
                                 keyboardType: TextInputType.number,
-                                controller: _mob_number,
+                                controller: mobNumberController,
                                 style: TextStyle(color: Colors.black),
+                                validator: (val) {
+                                  if (val!.isEmpty) {
+                                    return "Please enter mobile number";
+                                  }
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,
                                     filled: true,
@@ -68,8 +69,14 @@ class _MyLoginState extends State<MyLogin> {
                               ),
                               TextFormField(
                                 style: TextStyle(),
-                                controller: _password,
+                                controller: passwordController,
                                 obscureText: true,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return "Please enter password";
+                                  }
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,
                                     filled: true,
@@ -85,13 +92,12 @@ class _MyLoginState extends State<MyLogin> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   TextButton(
-                                      onPressed: ()=>Navigator.pushReplacementNamed(context, 'loginSubAdmin'),
+                                      onPressed: () => Navigator.pushReplacementNamed(context, 'loginSubAdmin'),
                                       child: Text(
                                         "Login as SubAdmin",
                                         style: TextStyle(
                                           decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
+                                          color: Color.fromARGB(255, 255, 255, 255),
                                           fontSize: 18,
                                         ),
                                       )),
@@ -101,27 +107,30 @@ class _MyLoginState extends State<MyLogin> {
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sign in',
-                                    style: TextStyle(
-                                        fontSize: 27,
-                                        fontWeight: FontWeight.w700),
+                                    style: TextStyle(fontSize: 27, fontWeight: FontWeight.w700),
                                   ),
                                   CircleAvatar(
                                     radius: 30,
-                                    backgroundColor:
-                                        Color.fromARGB(255, 255, 255, 255),
-                                    child: IconButton(
-                                        color: Color.fromARGB(255, 2, 2, 2),
-                                        onPressed: () {
-                                          login(context);
-                                        },
-                                        icon: Icon(
-                                          Icons.arrow_forward,
-                                        )),
+                                    backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                                    child: isLogin.value
+                                        ? CircularProgressIndicator(
+                                            color: Colors.black,
+                                          )
+                                        : IconButton(
+                                            color: Color.fromARGB(255, 2, 2, 2),
+                                            onPressed: () async {
+                                              if (_loginKey.currentState!.validate()) {
+                                                isLogin.value = true;
+                                                await login(context);
+                                              }
+                                            },
+                                            icon: Icon(
+                                              Icons.arrow_forward,
+                                            )),
                                   )
                                 ],
                               ),
@@ -129,21 +138,18 @@ class _MyLoginState extends State<MyLogin> {
                                 height: 40,
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pushReplacementNamed(
-                                          context, 'register');
+                                      Navigator.pushReplacementNamed(context, 'register');
                                     },
                                     child: Text(
                                       'Sign Up',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                           decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
+                                          color: Color.fromARGB(255, 255, 255, 255),
                                           fontSize: 18),
                                     ),
                                     style: ButtonStyle(),
@@ -154,8 +160,7 @@ class _MyLoginState extends State<MyLogin> {
                                         'Forgot Password',
                                         style: TextStyle(
                                           decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
+                                          color: Color.fromARGB(255, 255, 255, 255),
                                           fontSize: 18,
                                         ),
                                       )),
@@ -191,8 +196,7 @@ class RedBlackPainter extends CustomPainter {
 
     Path ovalPath = Path();
     ovalPath.moveTo(0, height * 0.2);
-    ovalPath.quadraticBezierTo(
-        width * 0.45, height * 0.25, width * 0.5, height * 0.5);
+    ovalPath.quadraticBezierTo(width * 0.45, height * 0.25, width * 0.5, height * 0.5);
 
     ovalPath.quadraticBezierTo(width * 0.6, height * 0.8, width * 0.1, height);
     ovalPath.lineTo(0, height);

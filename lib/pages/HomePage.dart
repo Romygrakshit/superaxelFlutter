@@ -3,6 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:loginuicolors/pages/NewEnquiry.dart';
 import 'package:loginuicolors/pages/PastEnquiries.dart';
 import 'package:loginuicolors/pages/Profile.dart';
+import 'package:loginuicolors/pages/product_form_garage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,7 +28,12 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushReplacementNamed(context, 'login');
   }
 
-  final List<Widget> _pages = [PastEnquiries(), NewEnquiries(), Profile()];
+  final List<Widget> _pages = [
+    PastEnquiries(),
+    NewEnquiries(),
+    ProductForm(),
+    Profile(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,8 +58,7 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: Container(
           color: Color.fromARGB(255, 18, 18, 18),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: GNav(
                 backgroundColor: Color.fromARGB(255, 18, 18, 18),
                 color: Color.fromARGB(255, 239, 239, 239),
@@ -72,6 +77,10 @@ class _HomePageState extends State<HomePage> {
                   GButton(
                     icon: Icons.add_box_rounded,
                     text: 'New Enquiry',
+                  ),
+                  GButton(
+                    icon: Icons.category,
+                    text: 'Product Enquiry',
                   ),
                   GButton(
                     icon: Icons.account_box_rounded,

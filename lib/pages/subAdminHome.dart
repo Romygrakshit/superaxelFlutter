@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:loginuicolors/pages/SubAdminProfile.dart';
 import 'package:loginuicolors/pages/createInventory.dart';
+import 'package:loginuicolors/pages/product_form_subadmin.dart';
 import 'package:loginuicolors/pages/subAdminEnquiries.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,11 +29,7 @@ class _SubAdminHomeState extends State<SubAdminHome> {
     });
   }
 
-  final List<Widget> _pages = [
-    SubAdminEnquiries(),
-    CreateInventory(),
-    SubAdminProfile()
-  ];
+  final List<Widget> _pages = [SubAdminEnquiries(), CreateInventory(), ProductFormSubAdmin(), SubAdminProfile()];
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +59,10 @@ class _SubAdminHomeState extends State<SubAdminHome> {
                 GButton(
                   icon: Icons.add_box_rounded,
                   text: 'Add Inventory',
+                ),
+                GButton(
+                  icon: Icons.category,
+                  text: 'Product Enquiry',
                 ),
                 GButton(
                   icon: Icons.account_box_rounded,
