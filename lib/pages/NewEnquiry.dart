@@ -63,10 +63,10 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                 setState(() {
                   lat = pickedData.latLong.latitude;
                   long = pickedData.latLong.longitude;
-                  address = pickedData.address;
+                  address = pickedData.addressName;
                   log(pickedData.latLong.latitude.toString());
                   log(pickedData.latLong.longitude.toString());
-                  log(pickedData.address);
+                  // log(pickedData.address);
                   isLocation = false;
                 });
               },

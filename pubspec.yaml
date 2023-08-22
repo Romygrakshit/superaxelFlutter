@@ -32,7 +32,8 @@ dependencies:
   google_nav_bar: ^5.0.6
   http: ^0.13.6
   image_picker: null
-  open_street_map_search_and_pick: ^0.0.16
+  # open_street_map_search_and_pick: ^0.0.16
+  open_street_map_search_and_pick: ^0.1.0
   shared_preferences: ^2.1.0
 
 dev_dependencies:
