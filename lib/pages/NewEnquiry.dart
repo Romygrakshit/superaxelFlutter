@@ -21,6 +21,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedCompany;
   int? _selectedCar;
+  String? _selectedCarName;
   String? _selectedAxel;
   List<File> files = [];
   bool isLocation = false;
@@ -36,7 +37,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
   void submitEnquiry(BuildContext context) async {
     EnquiryService.createEnquiry(files, address, lat.toString(), long.toString(), _selectedCompany.toString(),
-        _selectedCar.toString(), _selectedAxel.toString(), priceOfEnquiry, context);
+        _selectedCarName.toString(), _selectedAxel.toString(), priceOfEnquiry, context);
   }
 
   pickFiles() async {
@@ -103,6 +104,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                           _selectedCompany = value.toString();
                           carSelected = false;
                           _selectedCar = null;
+                          _selectedCarName = null;
                         });
 
                         setState(() {
@@ -124,6 +126,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
+                          _selectedCarName = Globals.allCars.firstWhere((element) => element.id == value).car_name;
                           var response = await GaragesService.getPrices(int.parse(value.toString()), Globals.garageId);
 
                           if (response.isEmpty) {

@@ -40,7 +40,6 @@ class PastEnquiry {
     required this.car_name,
     required this.deleted,
   });
-  
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -74,12 +73,12 @@ class PastEnquiry {
       lng: map['lng'] as String,
       company_id: map['company_id'] as int,
       car_id: map['car_id'] as int,
-      axel: map['axel'] as String,
+      axel: map['axel'] != null ? map['axel'] as String : '',
       offered_price: map['offered_price'] as String,
       date_time: map['date_time'] as String,
       status: map['status'] as String,
       images_id: map['images_id'] as String,
-      delivery_boy: map['delivery_boy'] as String,
+      delivery_boy: map['delivery_boy'] != null ? map['delivery_boy'] as String : "",
       name: map['name'] != null ? map['name'] as String : null,
       mobile_number: map['mobile_number'] != null ? map['mobile_number'] as String : null,
       company: map['company'] as String,

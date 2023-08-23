@@ -20,14 +20,16 @@ class EnquiryService {
       Map decoded = jsonDecode(response.body);
       log(decoded.toString());
       var enquiries = decoded["data"];
+      dedcodedEnq = [];
       for (var enq in enquiries) {
         PastEnquiry newenq = PastEnquiry.fromMap(enq);
         dedcodedEnq.add(newenq);
       }
+      return dedcodedEnq;
     } catch (e) {
       log(e.toString());
+      return [];
     }
-    return dedcodedEnq;
   }
 
   static void createEnquiry(List<File> _image, String address, String lat, String lng, String company, String carName,
@@ -35,13 +37,13 @@ class EnquiryService {
     var uri = Uri.parse('$_baseUrl/create');
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
-    request.headers['Content-Type'] = "multipart/form-data";
+    // request.headers['Content-Type'] = "multipart/form-data";
 
     request.fields['garage_id'] = Globals.garageId.toString();
     request.fields['address'] = address;
     request.fields['lat'] = lat;
     request.fields['lng'] = lng;
-    request.fields['state'] = "Rajasthan";
+    // request.fields['state'] = "Rajasthan";
     request.fields['company'] = company;
     request.fields['car_name'] = carName;
     request.fields['axel'] = axel;
