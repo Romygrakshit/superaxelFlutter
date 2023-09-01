@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/category.dart';
 import 'package:loginuicolors/models/companies.dart';
@@ -37,6 +38,12 @@ class _ProductFormState extends State<ProductForm> {
   String right = '';
 
   bool isSubmitProduct = false;
+
+  // locator
+  bool servicestatus = false;
+  bool haspermission = false;
+  late LocationPermission permission;
+  late Position position;
 
   void submitProduct(BuildContext context) async {
     setState(() {
@@ -111,11 +118,58 @@ class _ProductFormState extends State<ProductForm> {
     return true;
   }
 
+  checkGps() async {
+    servicestatus = await Geolocator.isLocationServiceEnabled();
+    if (servicestatus) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Location permissions are denied');
+        } else if (permission == LocationPermission.deniedForever) {
+          debugPrint("'Location permissions are permanently denied");
+        } else {
+          haspermission = true;
+        }
+      } else {
+        haspermission = true;
+      }
+
+      if (haspermission) {
+        setState(() {
+          //refresh the UI
+        });
+
+        getLocation();
+      }
+    } else {
+      print("GPS Service is not enabled, turn on GPS location");
+    }
+
+    setState(() {
+      //refresh the UI
+    });
+  }
+
+  getLocation() async {
+    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.longitude.toString());
+    debugPrint(position.latitude.toString());
+
+    long = position.longitude;
+    lat = position.latitude;
+
+    setState(() {
+      //refresh UI
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLocation
         ? OpenStreetMapSearchAndPick(
-            center: LatLong(26.82, 75.85),
+            center: LatLong(lat, long),
             onPicked: (pickedData) {
               debugPrint("${pickedData.toString()}");
               setState(() {
@@ -247,7 +301,8 @@ class _ProductFormState extends State<ProductForm> {
                         width: 200,
                         height: 40,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            await checkGps();
                             setState(() {
                               isLocation = true;
                             });
