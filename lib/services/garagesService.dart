@@ -256,6 +256,9 @@ class GaragesService {
     required int garageId,
     required int companyId,
     required int price,
+    required String lat,
+    required String long,
+    required String address,
   }) async {
 //     {
 //   "car_id":326,
@@ -272,7 +275,10 @@ class GaragesService {
         "category_id": categoryId,
         "garage_id": garageId,
         "company_id": companyId,
-        "price": price
+        "price": price,
+        "lat": lat,
+        "long": long,
+        "address": address,
       };
 
       final result = await apiServices.postMethod(

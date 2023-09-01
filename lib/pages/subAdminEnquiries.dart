@@ -20,8 +20,8 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
   bool first = true;
 
   getAllEvents() async {
-    List<Enquiry> newEnquiries = await SubAdminService.getEnqbyState(Globals.subAdminState);
-    newEnquiries = new List.from(newEnquiries.reversed);
+    List<Enquiry> newEnquiries = await SubAdminService.getEnqbyState(Globals.subAdminId);
+    newEnquiries = List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
     log(enquiries.toString());
     first = false;
@@ -30,7 +30,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
 
   @override
   Widget build(BuildContext context) {
-    log(Globals.subAdminState);
+    // log(Globals.subAdminState);
     if (first) {
       getAllEvents();
     }
@@ -43,6 +43,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
               itemCount: enquiries.length,
               itemBuilder: (context, index) {
                 Enquiry enquiry = enquiries[index];
+                final imageUrl = enquiry.imagesUrls.first.replaceAll('/..', Globals.restApiUrl);
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, 'EditEnqSubAdmin', arguments: enquiry);
@@ -64,7 +65,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                     height: 100,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage('assets/trag.jfif'),
+                                        image: NetworkImage(imageUrl),
                                         fit: BoxFit.cover,
                                       ),
                                       borderRadius: BorderRadius.circular(10),
@@ -106,7 +107,22 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                         ),
                                       ),
                                       SizedBox(height: 4), // add more space between the second and third text
-                                      SizedBox(height: 2),
+                                      Text(
+                                        'Company: ${enquiry.company}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      SizedBox(height: 4), // add more space between the second and third text
+                                      Text(
+                                        'Car: ${enquiry.car_name}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      SizedBox(height: 4), // add more space between the second and third text
                                       Text(
                                         'Address:',
                                         style: TextStyle(

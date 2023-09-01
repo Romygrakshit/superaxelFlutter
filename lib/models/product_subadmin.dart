@@ -24,40 +24,51 @@
 
 class ProductSUbadmin {
   final int id;
-  final int garageId;
-  final int categoryId;
-  final int companyId;
-  final int carId;
+  final String company;
+  final String carName;
+  final String garageName;
+  // final int categoryId;
+  // final int companyId;
+  // final int carId;
   final String state;
   final int price;
+  final String categoryName;
 
   ProductSUbadmin({
     required this.id,
-    required this.garageId,
-    required this.categoryId,
-    required this.companyId,
-    required this.carId,
+    required this.company,
+    required this.carName,
+    required this.garageName,
+    required this.categoryName,
+    // required this.categoryId,
+    // required this.companyId,
+    // required this.carId,
     required this.state,
     required this.price,
   });
 
   factory ProductSUbadmin.fromMap(Map<String, dynamic> json) => ProductSUbadmin(
         id: json["id"],
-        garageId: json["garage_id"],
-        categoryId: json["category_id"],
-        companyId: json["company_id"],
-        carId: json["car_id"],
+        // garageId: json["garage_id"] != null ? json["garage_id"] : 0,
+        // categoryId: json["category_id"],
+        // companyId: json["company_id"] != null ? json["company_id"] : 0,
+        // carId: json["car_id"] != null ? json["car_id"] : 0,
         state: json["state"],
         price: json["price"],
+
+        company: json["company"],
+        carName: json["car_name"],
+        garageName: json["garage_name"],
+        categoryName: json["category_name"],
       );
 
-  Map<String, dynamic> toMap() => {
-        "id": id,
-        "garage_id": garageId,
-        "category_id": categoryId,
-        "company_id": companyId,
-        "car_id": carId,
-        "state": state,
-        "price": price,
-      };
+  // Map<String, dynamic> toMap() => {
+  //       "id": id,
+  //       "garage_id": garageId,
+  //       "category_id": categoryId,
+  //       "company_id": companyId,
+  //       "car_id": carId,
+  //       "state": state,
+  //       "price": price,
+  //     };
 }

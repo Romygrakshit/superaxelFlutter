@@ -30,18 +30,26 @@ class SubAdminService {
     }
   }
 
-  static Future<List<Enquiry>> getEnqbyState(String state) async {
-    List<Enquiry> dedcodedEnq = [];
-    Uri responseUri = Uri.parse('$_baseUrl/getEnqbyState');
-    http.Response response = await http.post(responseUri, body: {'state': state});
-    var decoded = jsonDecode(response.body);
-    log(decoded.toString());
-    var enquiries = decoded["data"];
-    for (var enq in enquiries) {
-      Enquiry newenq = Enquiry.fromMap(enq);
-      dedcodedEnq.add(newenq);
+  static Future<List<Enquiry>> getEnqbyState(int subAdminId) async {
+    try {
+      List<Enquiry> dedcodedEnq = [];
+      Uri responseUri = Uri.parse('$_baseUrl/getEnqbyState');
+      final response = await http.post(
+        responseUri,
+        body: {'sID': subAdminId.toString()},
+      );
+      var decoded = jsonDecode(response.body);
+      // log(decoded.toString());
+      var enquiries = decoded["data"];
+      for (var enq in enquiries) {
+        Enquiry newenq = Enquiry.fromMap(enq);
+        dedcodedEnq.add(newenq);
+      }
+      return dedcodedEnq;
+    } catch (e) {
+      debugPrint("error is $e");
+      return [];
     }
-    return dedcodedEnq;
   }
 
   static Future updateEnquiry({Object? body}) async {

@@ -35,6 +35,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   String left = '';
   String right = '';
 
+  ScrollController _scrollController = ScrollController();
+
   void submitEnquiry(BuildContext context) async {
     EnquiryService.createEnquiry(files, address, lat.toString(), long.toString(), _selectedCompany.toString(),
         _selectedCarName.toString(), _selectedAxel.toString(), priceOfEnquiry, context);
@@ -51,6 +53,12 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     } catch (e) {
       log(e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -83,9 +91,14 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     DropdownButtonFormField(
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         labelText: 'Select Company',
                       ),
                       value: _selectedCompany,
@@ -113,10 +126,15 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         });
                       },
                     ),
-                    if (companySelected)
+                    if (companySelected) ...[
+                      const SizedBox(
+                        height: 20,
+                      ),
                       DropdownButtonFormField(
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           labelText: 'Select Car',
                         ),
                         value: _selectedCar,
@@ -141,12 +159,18 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             carSelected = true;
                           });
                         },
+                      )
+                    ],
+                    if (carSelected) ...[
+                      const SizedBox(
+                        height: 20,
                       ),
-                    if (carSelected)
                       DropdownButtonFormField(
                         value: _selectedAxel,
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           labelText: 'Select Axel (left/right)',
                         ),
                         items: const [
@@ -167,7 +191,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             axelSelected = true;
                           });
                         },
-                      ),
+                      )
+                    ],
 
                     // if (carSelected)
                     //   DropdownButtonFormField(
@@ -212,7 +237,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       Center(
                           child: Text(
                         'Price : $priceOfEnquiry',
-                        style: TextStyle(fontSize: 25),
+                        style: TextStyle(fontSize: 20),
                       )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -231,19 +256,46 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                               height: 20,
                             ),
                             SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: Text(
-                                  'If Uploaded Photos, we will provide guaranteed prices',
-                                  style: TextStyle(fontSize: 13),
-                                  textDirection: TextDirection.ltr,
-                                  maxLines: 2,
-                                )),
-                            Column(
-                              children: [
-                                for (var image in files)
-                                  Container(margin: EdgeInsets.all(10), height: 100, child: Image.file(image))
-                              ],
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              child: Text(
+                                '*If Uploaded Photos, we will provide guaranteed prices',
+                                style: TextStyle(fontSize: 13),
+                                textDirection: TextDirection.ltr,
+                                maxLines: 2,
+                              ),
                             ),
+                            files.isEmpty
+                                ? const SizedBox.shrink()
+                                : Container(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    height: 300,
+                                    child: Scrollbar(
+                                      thumbVisibility: true, //always show scrollbar
+                                      thickness: 4, //width of scrollbar
+                                      radius: Radius.circular(20), //corner radius of scrollbar
+                                      controller: _scrollController,
+                                      child: SingleChildScrollView(
+                                        controller: _scrollController,
+                                        child: Column(
+                                          children: [
+                                            for (var image in files)
+                                              Container(
+                                                margin: EdgeInsets.all(10),
+                                                height: 150,
+                                                width: MediaQuery.of(context).size.width * 0.8,
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  child: Image.file(
+                                                    image,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                             Container(
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(

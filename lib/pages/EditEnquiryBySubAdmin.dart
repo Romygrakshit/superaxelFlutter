@@ -1,11 +1,15 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+
 import 'package:loginuicolors/models/enquriyModel.dart';
 import 'package:loginuicolors/services/subAdminService.dart';
 
 class EditEnqSubAdmin extends StatefulWidget {
-  EditEnqSubAdmin({super.key});
+  EditEnqSubAdmin({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<EditEnqSubAdmin> createState() => _EditEnqSubAdminState();
@@ -16,30 +20,24 @@ class _EditEnqSubAdminState extends State<EditEnqSubAdmin> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String status = 'pending';
+  String status = '';
 
   updateEnquiry(BuildContext context, Enquiry enq) async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Fill the new fields')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fill the new fields')));
       return;
     }
-    bool success = await SubAdminService.updateEnquiry(body: {
-      'id': enq.id.toString(),
-      'price': _newOfferedPrice.text.trim().toString(),
-      'status': status
-    });
+    bool success = await SubAdminService.updateEnquiry(
+        body: {'id': enq.id.toString(), 'price': _newOfferedPrice.text.trim().toString(), 'status': status});
     if (success) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Enquiry Updated Successfully')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Enquiry Updated Successfully')));
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
     } else {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error in updating enquiry')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error in updating enquiry')));
     }
   }
 
@@ -84,7 +82,7 @@ class _EditEnqSubAdminState extends State<EditEnqSubAdmin> {
                 ),
                 DropdownButtonFormField(
                     isDense: true,
-                    value: status,
+                    value: enqury.status,
                     decoration: InputDecoration(
                       labelText: 'Enter the new Status',
                       border: OutlineInputBorder(),
@@ -111,9 +109,7 @@ class _EditEnqSubAdminState extends State<EditEnqSubAdmin> {
                       status = value.toString();
                     }),
                 Center(
-                  child: ElevatedButton(
-                      onPressed: () => updateEnquiry(context, enqury),
-                      child: Text('Submit Updates')),
+                  child: ElevatedButton(onPressed: () => updateEnquiry(context, enqury), child: Text('Submit Updates')),
                 ),
               ],
             ),

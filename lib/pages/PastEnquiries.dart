@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/pastEnquiry.dart';
 
@@ -21,7 +23,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
     List<PastEnquiry> newEnquiries = await EnquiryService.pastEnquiryList(Globals.garageId);
     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
-    log(enquiries.toString());
+    // log(enquiries.toString());
     first = false;
     setState(() {});
   }
@@ -44,6 +46,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                 itemCount: enquiries.length,
                 itemBuilder: (context, index) {
                   PastEnquiry enquiry = enquiries[index];
+
+                  final imageUrl = enquiry.imageUrl.replaceAll('/..', Globals.restApiUrl);
                   return Container(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(22),
@@ -61,7 +65,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                     height: 100,
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: AssetImage('assets/trag.jfif'),
+                                        image: NetworkImage(imageUrl),
                                         fit: BoxFit.cover,
                                       ),
                                       borderRadius: BorderRadius.circular(10),
@@ -72,17 +76,25 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
+                                        'Company Name: ${enquiry.company}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 239, 239, 239),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
                                         'Enquiry Number: ${enquiry.id}',
                                         style: TextStyle(color: Color.fromARGB(255, 175, 175, 175), fontSize: 14),
                                       ),
                                       SizedBox(height: 4), // add space between the first and second text
                                       Container(
-                                        width: 200,
+                                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              enquiry.axel,
+                                              enquiry.car_name,
                                               style: TextStyle(
                                                   color: Color.fromARGB(255, 239, 239, 239),
                                                   fontWeight: FontWeight.bold,
@@ -102,7 +114,22 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 4), // add more space between the second and third text
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Axel: ${enquiry.axel}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ), // add more space between the second and third text
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Offered Price: ${enquiry.offeredPrice}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ), // add more space between the second and third text
                                       SizedBox(height: 2),
                                       Text(
                                         'Address:',
@@ -125,13 +152,13 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       ),
 
                                       SizedBox(height: 4), // add space between the third and fourth text
-                                      Text(
-                                        'Price: ${enquiry.offered_price}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(255, 215, 0, 0),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
+                                      // Text(
+                                      //   'Price: ${enquiry.offered_price}',
+                                      //   style: TextStyle(
+                                      //       color: Color.fromARGB(255, 215, 0, 0),
+                                      //       fontWeight: FontWeight.bold,
+                                      //       fontSize: 16),
+                                      // ),
                                     ],
                                   ),
                                 ],
