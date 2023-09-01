@@ -278,6 +278,16 @@ class _ProductFormState extends State<ProductForm> {
                           setState(() {
                             priceOfEnquiry = price[0].price;
                           });
+                        } else {
+                          setState(() {
+                            priceOfEnquiry = 0;
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Price not available'),
+                            ),
+                          );
                         }
                         debugPrint("price $price");
                       },
