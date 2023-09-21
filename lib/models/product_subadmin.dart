@@ -33,6 +33,8 @@ class ProductSUbadmin {
   final String state;
   final int price;
   final String categoryName;
+  final String lat;
+  final String lng;
 
   ProductSUbadmin({
     required this.id,
@@ -45,6 +47,8 @@ class ProductSUbadmin {
     // required this.carId,
     required this.state,
     required this.price,
+    required this.lat,
+    required this.lng,
   });
 
   factory ProductSUbadmin.fromMap(Map<String, dynamic> json) => ProductSUbadmin(
@@ -60,6 +64,8 @@ class ProductSUbadmin {
         carName: json["car_name"],
         garageName: json["garage_name"],
         categoryName: json["category_name"],
+        lat: json["lat"],
+        lng: json["lng"],
       );
 
   // Map<String, dynamic> toMap() => {

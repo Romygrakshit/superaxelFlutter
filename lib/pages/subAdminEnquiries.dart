@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:loginuicolors/models/enquriyModel.dart';
 import 'package:loginuicolors/services/subAdminService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SubAdminEnquiries extends StatefulWidget {
   const SubAdminEnquiries({super.key});
@@ -43,7 +44,15 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
               itemCount: enquiries.length,
               itemBuilder: (context, index) {
                 Enquiry enquiry = enquiries[index];
-                final imageUrl = enquiry.imagesUrls.first.replaceAll('/..', Globals.restApiUrl);
+                String imageUrl = ' ';
+                if (enquiry.imagesUrls.first.contains('../..')) {
+                  imageUrl = enquiry.imagesUrls.first.replaceAll('../..', Globals.restApiUrl);
+                } else {
+                  imageUrl = Globals.restApiUrl + enquiry.imagesUrls.first;
+                  debugPrint("Imageurl is $imageUrl");
+                }
+                // enquiry.imagesUrls.first.replaceAll('../..', Globals.restApiUrl);
+                debugPrint("Imageurl is $imageUrl");
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, 'EditEnqSubAdmin', arguments: enquiry);
@@ -124,6 +133,14 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                       ),
                                       SizedBox(height: 4), // add more space between the second and third text
                                       Text(
+                                        'Mobile No: ${enquiry.mobile_number}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      SizedBox(height: 4), // add more space between the second and third text
+                                      Text(
                                         'Address:',
                                         style: TextStyle(
                                             color: Color.fromARGB(255, 214, 214, 214),
@@ -144,12 +161,44 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                       ),
 
                                       SizedBox(height: 4), // add space between the third and fourth text
-                                      Text(
-                                        'Price: ${enquiry.offered_price}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(255, 215, 0, 0),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
+                                      SizedBox(
+                                        height: 50,
+                                        width: MediaQuery.of(context).size.width - 180,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Price: ${enquiry.offered_price}',
+                                              style: TextStyle(
+                                                  color: Color.fromARGB(255, 215, 0, 0),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                            const Spacer(),
+                                            SizedBox(
+                                              width: 100,
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.orange,
+                                                ),
+                                                onPressed: () async {
+                                                  String textToShare = """
+Enquiry Id : ${enquiry.id}
+Company: ${enquiry.company}
+Car: ${enquiry.car_name}
+Axel Type: ${enquiry.axel}
+Price: ${enquiry.offered_price}
+Status: ${enquiry.status}
+Garage name: ${enquiry.garageName}
+Garage address: ${enquiry.address}
+Map location: http://maps.google.com/maps?z=12&t=m&q=loc:${enquiry.lat}+${enquiry.lng}""";
+                                                  await Share.share('$textToShare');
+                                                },
+                                                child: Text("Share"),
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),

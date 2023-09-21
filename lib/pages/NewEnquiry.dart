@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/models/statesDecode.dart';
@@ -35,6 +36,14 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   String left = '';
   String right = '';
 
+  bool loadLocation = false;
+
+  // locator
+  bool servicestatus = false;
+  bool haspermission = false;
+  late LocationPermission permission;
+  late Position position;
+
   ScrollController _scrollController = ScrollController();
 
   void submitEnquiry(BuildContext context) async {
@@ -55,6 +64,55 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     }
   }
 
+  Future<void> checkGps() async {
+    loadLocation = true;
+    servicestatus = await Geolocator.isLocationServiceEnabled();
+    if (servicestatus) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Location permissions are denied');
+        } else if (permission == LocationPermission.deniedForever) {
+          debugPrint("'Location permissions are permanently denied");
+        } else {
+          haspermission = true;
+        }
+      } else {
+        haspermission = true;
+      }
+
+      if (haspermission) {
+        setState(() {
+          //refresh the UI
+        });
+
+        await getLocation();
+      }
+    } else {
+      print("GPS Service is not enabled, turn on GPS location");
+    }
+
+    setState(() {
+      //refresh the UI
+    });
+  }
+
+  Future<void> getLocation() async {
+    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.longitude.toString());
+    debugPrint(position.latitude.toString());
+
+    long = position.longitude;
+    lat = position.latitude;
+
+    setState(() {
+      //refresh UI
+      loadLocation = false;
+    });
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -66,7 +124,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     return isLocation
         ? Scaffold(
             body: OpenStreetMapSearchAndPick(
-              center: LatLong(26.82, 75.85),
+              // center: LatLong(26.82, 75.85),
+              center: LatLong(lat, long),
               onPicked: (pickedData) {
                 debugPrint("${pickedData.toString()}");
                 setState(() {
@@ -298,14 +357,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                   ),
                             Container(
                               padding: const EdgeInsets.symmetric(vertical: 16.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isLocation = true;
-                                  });
-                                },
-                                child: const Text('Pick Location'),
-                              ),
+                              child: loadLocation
+                                  ? CircularProgressIndicator.adaptive()
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        await checkGps();
+                                        setState(() {
+                                          isLocation = true;
+                                        });
+                                      },
+                                      child: const Text('Pick Location'),
+                                    ),
                             ),
                             SizedBox(
                               width: 300,

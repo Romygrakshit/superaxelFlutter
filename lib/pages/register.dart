@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/statesDecode.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -25,14 +26,26 @@ class _MyRegisterState extends State<MyRegister> {
   final _signUpKey = GlobalKey<FormState>();
 
   File _image = File('');
-  late String lat, long;
+  // late String lat, long;
+  double lat = 0;
+  double long = 0;
   bool imageloaded = false;
   bool location = false;
   String? dropDownValue;
+  bool isLocation = false;
+
+  // locator
+  bool servicestatus = false;
+  bool haspermission = false;
+  late LocationPermission permission;
+  late Position position;
+  bool loadLocation = false;
+
+  String address = '';
 
   signUp(BuildContext context) async {
     await GaragesService.signUp(_image, _garageName.text, dropDownValue.toString(), _city.text, _address.text,
-        _mobNumber.text, lat, long, _password.text, context);
+        _mobNumber.text, lat.toString(), long.toString(), _password.text, context);
   }
 
   addImage() async {
@@ -47,6 +60,55 @@ class _MyRegisterState extends State<MyRegister> {
     } catch (error) {
       log(error.toString());
     }
+  }
+
+  Future<void> checkGps() async {
+    loadLocation = true;
+    servicestatus = await Geolocator.isLocationServiceEnabled();
+    if (servicestatus) {
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          debugPrint('Location permissions are denied');
+        } else if (permission == LocationPermission.deniedForever) {
+          debugPrint("'Location permissions are permanently denied");
+        } else {
+          haspermission = true;
+        }
+      } else {
+        haspermission = true;
+      }
+
+      if (haspermission) {
+        setState(() {
+          //refresh the UI
+        });
+
+        await getLocation();
+      }
+    } else {
+      print("GPS Service is not enabled, turn on GPS location");
+    }
+
+    setState(() {
+      //refresh the UI
+    });
+  }
+
+  Future<void> getLocation() async {
+    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.longitude.toString());
+    debugPrint(position.latitude.toString());
+
+    long = position.longitude;
+    lat = position.latitude;
+
+    setState(() {
+      //refresh UI
+      loadLocation = false;
+    });
   }
 
   Future<Position> _getCurrentLocation(BuildContext context) async {
@@ -98,251 +160,289 @@ class _MyRegisterState extends State<MyRegister> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: CustomPaint(
-          painter: BlackRedPainter(),
-          child: Stack(
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: 35, top: 30),
-                child: Text(
-                  'Create\nAccount',
-                  style: TextStyle(color: Colors.white, fontSize: 33),
-                ),
-              ),
-              SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.28),
-                  child: Form(
-                    key: _signUpKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(left: 35, right: 35),
+        body: isLocation
+            ? OpenStreetMapSearchAndPick(
+                center: LatLong(lat, long),
+                onPicked: (pickedData) {
+                  debugPrint("${pickedData.toString()}");
+                  setState(() {
+                    lat = pickedData.latLong.latitude;
+                    long = pickedData.latLong.longitude;
+                    address = pickedData.addressName;
+                    log(pickedData.latLong.latitude.toString());
+                    log(pickedData.latLong.longitude.toString());
+                    // log(pickedData.address);
+                    isLocation = false;
+                  });
+                },
+                buttonText: "Pick Location",
+              )
+            : CustomPaint(
+                painter: BlackRedPainter(),
+                child: Stack(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 35, top: 30),
+                      child: Text(
+                        'Create\nAccount',
+                        style: TextStyle(color: Colors.white, fontSize: 33),
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      child: Container(
+                        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.28),
+                        child: Form(
+                          key: _signUpKey,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: 30,
-                              ),
-                              imageloaded
-                                  ? GestureDetector(
-                                      onTap: () => addImage(),
-                                      child: Container(
-                                          padding: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(125),
-                                              border: Border.all(color: Colors.red, width: 2)),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(125),
-                                            child: Image.file(
-                                              _image,
-                                              fit: BoxFit.cover,
-                                              height: 250,
-                                              width: 250,
-                                            ),
-                                          )),
-                                    )
-                                  : DottedBorder(
-                                      borderType: BorderType.Circle,
-                                      radius: const Radius.circular(10),
-                                      color: Colors.white,
-                                      strokeCap: StrokeCap.round,
-                                      dashPattern: const [10, 4],
-                                      child: GestureDetector(
-                                        onTap: () => addImage(),
-                                        child: Container(
-                                          height: 250,
-                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                                          width: 250,
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  Icons.add_a_photo_outlined,
-                                                  color: Colors.white,
+                              Container(
+                                margin: EdgeInsets.only(left: 35, right: 35),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    imageloaded
+                                        ? GestureDetector(
+                                            onTap: () => addImage(),
+                                            child: Container(
+                                                padding: const EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(125),
+                                                    border: Border.all(color: Colors.red, width: 2)),
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(125),
+                                                  child: Image.file(
+                                                    _image,
+                                                    fit: BoxFit.cover,
+                                                    height: 250,
+                                                    width: 250,
+                                                  ),
+                                                )),
+                                          )
+                                        : DottedBorder(
+                                            borderType: BorderType.Circle,
+                                            radius: const Radius.circular(10),
+                                            color: Colors.white,
+                                            strokeCap: StrokeCap.round,
+                                            dashPattern: const [10, 4],
+                                            child: GestureDetector(
+                                              onTap: () => addImage(),
+                                              child: Container(
+                                                height: 250,
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                                                width: 250,
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: const [
+                                                      Icon(
+                                                        Icons.add_a_photo_outlined,
+                                                        color: Colors.white,
+                                                      ),
+                                                      Text(
+                                                        "Add Image",
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                                Text(
-                                                  "Add Image",
-                                                  style: TextStyle(color: Colors.white),
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    TextFormField(
+                                      controller: _garageName,
+                                      style: TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "Garage Name",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    TextFormField(
+                                      controller: _mobNumber,
+                                      style: TextStyle(color: Colors.black),
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "Mobile Number",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    TextFormField(
+                                      controller: _password,
+                                      style: TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "Password",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    TextFormField(
+                                      controller: _city,
+                                      style: TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "City",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    DropdownButtonFormField(
+                                      items: [
+                                        for (StateDecode state in Globals.allStates)
+                                          DropdownMenuItem(value: state.state, child: Text("${state.state}"))
+                                      ],
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "Select State",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                      onChanged: (value) {
+                                        dropDownValue = value.toString();
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    TextFormField(
+                                      controller: _address,
+                                      style: TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "Address",
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    loadLocation
+                                        ? Center(
+                                            child: CircularProgressIndicator.adaptive(),
+                                          )
+                                        : GestureDetector(
+                                            onTap: () async {
+                                              await checkGps();
+                                              setState(() {
+                                                isLocation = true;
+                                              });
+
+                                              // _getCurrentLocation(context).then((value) {
+                                              //     lat = '${value.latitude}';
+
+                                              //     long = '${value.longitude}';
+                                              //     log(lat);
+                                              //     log(long);
+                                              //     location = true;
+                                              //     setState(() {});
+                                              //   });
+                                            },
+                                            child: Container(
+                                              child: Center(
+                                                  child: Text(
+                                                "Pick Location",
+                                                style: TextStyle(fontSize: 18),
+                                              )),
+                                              height: 65,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  border: Border.all()),
+                                            )),
+                                    const SizedBox(height: 20),
+                                    SizedBox(
+                                      width: 300,
+                                      child: Text(
+                                        style: TextStyle(fontSize: 16, color: Colors.white),
+                                        address,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              TextFormField(
-                                controller: _garageName,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "Garage Name",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              TextFormField(
-                                controller: _mobNumber,
-                                style: TextStyle(color: Colors.black),
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "Mobile Number",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              TextFormField(
-                                controller: _password,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "Password",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              TextFormField(
-                                controller: _city,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "City",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              DropdownButtonFormField(
-                                items: [
-                                  for (StateDecode state in Globals.allStates)
-                                    DropdownMenuItem(value: state.state, child: Text("${state.state}"))
-                                ],
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "Select State",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                                onChanged: (value) {
-                                  dropDownValue = value.toString();
-                                },
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              TextFormField(
-                                controller: _address,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey.shade100,
-                                    filled: true,
-                                    hintText: "Address",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              GestureDetector(
-                                  onTap: () => _getCurrentLocation(context).then((value) {
-                                        lat = '${value.latitude}';
-
-                                        long = '${value.longitude}';
-                                        log(lat);
-                                        log(long);
-                                        location = true;
-                                        setState(() {});
-                                      }),
-                                  child: Container(
-                                    child: Center(
-                                        child: Text(
-                                      "Pick Location",
-                                      style: TextStyle(fontSize: 18),
-                                    )),
-                                    height: 65,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all()),
-                                  )),
-                              Text(
-                                location ? '$lat and $long' : "",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              SizedBox(
-                                height: 40,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Sign Up',
-                                    style: TextStyle(color: Colors.white, fontSize: 27, fontWeight: FontWeight.w700),
-                                  ),
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Color(0xff4c505b),
-                                    child: IconButton(
-                                        color: Colors.white,
-                                        onPressed: () => signUp(context),
-                                        icon: Icon(
-                                          Icons.arrow_forward,
-                                        )),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 40,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
-                                    child: Text(
-                                      'Sign In',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                          decoration: TextDecoration.underline, color: Colors.white, fontSize: 18),
+                                    const SizedBox(height: 20),
+                                    SizedBox(
+                                      height: 40,
                                     ),
-                                    style: ButtonStyle(),
-                                  ),
-                                ],
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Sign Up',
+                                          style:
+                                              TextStyle(color: Colors.white, fontSize: 27, fontWeight: FontWeight.w700),
+                                        ),
+                                        CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Color(0xff4c505b),
+                                          child: IconButton(
+                                              color: Colors.white,
+                                              onPressed: () => signUp(context),
+                                              icon: Icon(
+                                                Icons.arrow_forward,
+                                              )),
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 40,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+                                          child: Text(
+                                            'Sign In',
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                decoration: TextDecoration.underline,
+                                                color: Colors.white,
+                                                fontSize: 18),
+                                          ),
+                                          style: ButtonStyle(),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               )
                             ],
                           ),
-                        )
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

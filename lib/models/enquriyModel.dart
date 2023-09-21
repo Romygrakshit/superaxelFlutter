@@ -21,6 +21,7 @@ class Enquiry {
   String? company;
   String? car_name;
   List<String> imagesUrls;
+  String? garageName;
   Enquiry({
     required this.id,
     // required this.garage_id,
@@ -41,6 +42,7 @@ class Enquiry {
     this.company,
     this.car_name,
     required this.imagesUrls,
+    this.garageName,
   });
 
   Map<String, dynamic> toMap() {
@@ -83,11 +85,12 @@ class Enquiry {
       // delivery_boy: map['delivery_boy']!=nu as String,
       state: map['state'] as String,
       // name: map['name'] != null ? map['name'] as String : null,
-      // mobile_number: map['mobile_number'] != null ? map['mobile_number'] as String : null,
+      mobile_number: map['mobile_number'] != null ? map['mobile_number'] as String : null,
       company: map['company'] != null ? map['company'] as String : null,
       car_name: map['car_name'] != null ? map['car_name'] as String : null,
       // it return strings of urls separated by comma
-      imagesUrls: map['image_urls'] != null ? map['image_urls'].toString().split(',') : [],
+      imagesUrls: map['garage_image'] != null ? map['garage_image'].toString().split(',') : [],
+      garageName: map['garage_name'] != null ? map['garage_name'] as String : null,
     );
   }
 

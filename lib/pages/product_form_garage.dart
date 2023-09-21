@@ -45,6 +45,8 @@ class _ProductFormState extends State<ProductForm> {
   late LocationPermission permission;
   late Position position;
 
+  bool loadLocation = false;
+
   void submitProduct(BuildContext context) async {
     setState(() {
       isSubmitProduct = true;
@@ -118,7 +120,8 @@ class _ProductFormState extends State<ProductForm> {
     return true;
   }
 
-  checkGps() async {
+  Future<void> checkGps() async {
+    loadLocation = true;
     servicestatus = await Geolocator.isLocationServiceEnabled();
     if (servicestatus) {
       permission = await Geolocator.checkPermission();
@@ -141,7 +144,7 @@ class _ProductFormState extends State<ProductForm> {
           //refresh the UI
         });
 
-        getLocation();
+        await getLocation();
       }
     } else {
       print("GPS Service is not enabled, turn on GPS location");
@@ -152,7 +155,7 @@ class _ProductFormState extends State<ProductForm> {
     });
   }
 
-  getLocation() async {
+  Future<void> getLocation() async {
     position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     debugPrint(position.longitude.toString());
     debugPrint(position.latitude.toString());
@@ -162,6 +165,7 @@ class _ProductFormState extends State<ProductForm> {
 
     setState(() {
       //refresh UI
+      loadLocation = false;
     });
   }
 
@@ -310,15 +314,17 @@ class _ProductFormState extends State<ProductForm> {
                       Container(
                         width: 200,
                         height: 40,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await checkGps();
-                            setState(() {
-                              isLocation = true;
-                            });
-                          },
-                          child: const Text('Pick Location'),
-                        ),
+                        child: loadLocation
+                            ? Center(child: CircularProgressIndicator.adaptive())
+                            : ElevatedButton(
+                                onPressed: () async {
+                                  await checkGps();
+                                  setState(() {
+                                    isLocation = true;
+                                  });
+                                },
+                                child: const Text('Pick Location'),
+                              ),
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
