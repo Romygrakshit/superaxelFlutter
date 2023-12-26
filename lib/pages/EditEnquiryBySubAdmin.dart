@@ -96,12 +96,12 @@ class EditEnqSubAdmin extends HookWidget {
                           child: Text('pending'),
                         ),
                         DropdownMenuItem(
-                          value: 'Out for delivery',
-                          child: Text('Out for delivery'),
+                          value: 'out for delivery',
+                          child: Text('out for delivery'),
                         ),
                         DropdownMenuItem(
-                          value: 'delivered',
-                          child: Text('delivered'),
+                          value: 'delivere',
+                          child: Text('delivere'),
                         ),
                         DropdownMenuItem(
                           value: 'cancel',

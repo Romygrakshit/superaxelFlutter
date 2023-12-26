@@ -68,8 +68,8 @@ class _HomePageState extends State<HomePage> {
                 color: Color.fromARGB(255, 239, 239, 239),
                 tabBackgroundColor: Color.fromARGB(255, 0, 0, 0),
                 activeColor: Color.fromARGB(255, 215, 0, 0),
-                padding: EdgeInsets.all(16),
-                gap: 8,
+                padding: EdgeInsets.all(8),
+                gap: 5,
                 onTabChange: (index) {
                   _navigateBottomBar(index);
                 },

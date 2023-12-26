@@ -18,7 +18,8 @@ class _ProductFormSubAdminState extends State<ProductFormSubAdmin> {
   @override
   void initState() {
     super.initState();
-    SubAdminService.getProductEnquiryListSubAdmin(Globals.subAdminId).then((value) {
+    SubAdminService.getProductEnquiryListSubAdmin(Globals.subAdminId)
+        .then((value) {
       setState(() {
         isFetchLoading = false;
         productSubadmin = [];
@@ -56,31 +57,51 @@ class _ProductFormSubAdminState extends State<ProductFormSubAdmin> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "Car name : " + productSubadmin[index].carName.toString(),
+                                      "Car name : " +
+                                          productSubadmin[index]
+                                              .carName
+                                              .toString(),
                                       style: TextStyle(color: Colors.white),
                                     ),
                                     Divider(color: Colors.white),
-                                    Text("Company Name : " + productSubadmin[index].company.toString(),
+                                    Text(
+                                        "Company Name : " +
+                                            productSubadmin[index]
+                                                .company
+                                                .toString(),
                                         style: TextStyle(color: Colors.white)),
                                     Divider(color: Colors.white),
-                                    Text("Category Name : " + productSubadmin[index].categoryName.toString(),
+                                    Text(
+                                        "Category Name : " +
+                                            productSubadmin[index]
+                                                .categoryName
+                                                .toString(),
                                         style: TextStyle(color: Colors.white)),
                                     Divider(color: Colors.white),
-                                    Text("Garage Contact (name) : " + productSubadmin[index].garageName.toString(),
+                                    Text(
+                                        "Garage Contact (name) : " +
+                                            productSubadmin[index]
+                                                .garageName
+                                                .toString(),
                                         style: TextStyle(color: Colors.white)),
                                     Divider(color: Colors.white),
                                   ],
                                 ),
-                                subtitle: Text("Price: " + productSubadmin[index].price.toString(),
+                                subtitle: Text(
+                                    "Price: " +
+                                        productSubadmin[index].price.toString(),
                                     style: TextStyle(color: Colors.white)),
-                                trailing: Text("State: " + productSubadmin[index].state.toString(),
+                                trailing: Text(
+                                    "State: " +
+                                        productSubadmin[index].state.toString(),
                                     style: TextStyle(color: Colors.white)),
                               ),
                               Positioned(
                                 right: 20,
                                 bottom: 0,
                                 child: SizedBox(
-                                  width: 80,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.orange,

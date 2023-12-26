@@ -99,7 +99,8 @@ class _ProductFormState extends State<ProductForm> {
 
   pickFiles() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(allowMultiple: true);
 
       if (result != null) {
         files = result.paths.map((path) => File(path.toString())).toList();
@@ -111,7 +112,10 @@ class _ProductFormState extends State<ProductForm> {
   }
 
   bool checkIfTheDataForSubmitComplete() {
-    if (_selectedCompany == null || _selectedCar == null || _selectedCategory == null || priceOfEnquiry == 0) {
+    if (_selectedCompany == null ||
+        _selectedCar == null ||
+        _selectedCategory == null ||
+        priceOfEnquiry == 0) {
       return false;
     }
 
@@ -154,7 +158,8 @@ class _ProductFormState extends State<ProductForm> {
   }
 
   Future<void> getLocation() async {
-    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     debugPrint(position.longitude.toString());
     debugPrint(position.latitude.toString());
 
@@ -188,173 +193,191 @@ class _ProductFormState extends State<ProductForm> {
           )
         : Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  DropdownButtonFormField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Select Company',
-                    ),
-                    value: _selectedCompany,
-                    items: [
-                      for (Companies company in Globals.allCompanies)
-                        DropdownMenuItem(
-                          value: company.id,
-                          child: Text("${company.company}"),
-                        )
-                    ],
-                    hint: const Text('Select an option'),
-                    onChanged: (value) async {
-                      final selectedCardName =
-                          Globals.allCompanies.where((element) => element.id == value).first.company;
-                      setState(() {
-                        companySelected = false;
-                      });
-                      List<Cars> cars = await GaragesService.getAllCars(selectedCardName);
-                      setState(() {
-                        Globals.allCars = [];
-                        _selectedCompany = value as int;
-                        carSelected = false;
-                        _selectedCar = null;
-                      });
-
-                      setState(() {
-                        companySelected = true;
-                        Globals.allCars = cars;
-                      });
-                    },
-                  ),
-                  if (companySelected) ...[
-                    const SizedBox(height: 20),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
                     DropdownButtonFormField(
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Select Car',
+                        labelText: 'Select Company',
                       ),
-                      value: _selectedCar,
+                      value: _selectedCompany,
                       items: [
-                        for (Cars car in Globals.allCars)
-                          DropdownMenuItem(value: car.id, child: Text("${car.carName}"))
+                        for (Companies company in Globals.allCompanies)
+                          DropdownMenuItem(
+                            value: company.id,
+                            child: Text("${company.company}"),
+                          )
                       ],
                       hint: const Text('Select an option'),
                       onChanged: (value) async {
-                        var response = await GaragesService.getAllCategory();
-
-                        if (response.isNotEmpty) {
-                          setState(() {
-                            carSelected = true;
-                            Globals.allCategoryItems = response;
-                            _selectedCar = value as int;
-                          });
-                        }
-                        debugPrint("response: ${response.toString()}");
-                      },
-                    )
-                  ],
-                  if (carSelected) ...[
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField(
-                      value: _selectedCategory,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Select Category',
-                      ),
-                      items: [
-                        for (CategoryItems catItems in Globals.allCategoryItems)
-                          DropdownMenuItem(value: catItems.id, child: Text("${catItems.categoryName}"))
-                      ],
-                      hint: const Text('Select an option'),
-                      onChanged: (value) async {
+                        final selectedCardName = Globals.allCompanies
+                            .where((element) => element.id == value)
+                            .first
+                            .company;
                         setState(() {
-                          _selectedCategory = value as int;
-                          categorySelected = true;
+                          companySelected = false;
                         });
-                        List<Price> price = await GaragesService.getProductPrice(
-                            carId: _selectedCar!, categoryId: _selectedCategory!, garageId: Globals.garageId);
+                        List<Cars> cars =
+                            await GaragesService.getAllCars(selectedCardName);
+                        setState(() {
+                          Globals.allCars = [];
+                          _selectedCompany = value as int;
+                          carSelected = false;
+                          _selectedCar = null;
+                        });
 
-                        if (price.isNotEmpty) {
-                          setState(() {
-                            priceOfEnquiry = price[0].price;
-                          });
-                        } else {
-                          setState(() {
-                            priceOfEnquiry = 0;
-                          });
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Price not available'),
-                            ),
-                          );
-                        }
-                        debugPrint("price $price");
+                        setState(() {
+                          companySelected = true;
+                          Globals.allCars = cars;
+                        });
                       },
                     ),
-                  ],
-                  if (categorySelected && priceOfEnquiry != 0) ...[
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Center(
-                      child: Text(
-                        'Price : $priceOfEnquiry',
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    )
-                  ],
-                  Column(
-                    children: [
+                    if (companySelected) ...[
                       const SizedBox(height: 20),
-                      Container(
-                        width: 200,
-                        height: 40,
-                        child: loadLocation
-                            ? Center(child: CircularProgressIndicator.adaptive())
-                            : ElevatedButton(
-                                onPressed: () async {
-                                  await checkGps();
-                                  setState(() {
-                                    isLocation = true;
-                                  });
-                                },
-                                child: const Text('Pick Location'),
-                              ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: 300,
-                        child: Text(
-                          style: TextStyle(fontSize: 16),
-                          address,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                      DropdownButtonFormField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Select Car',
                         ),
-                      ),
-                      const SizedBox(height: 20),
+                        value: _selectedCar,
+                        items: [
+                          for (Cars car in Globals.allCars)
+                            DropdownMenuItem(
+                                value: car.id, child: Text("${car.carName}"))
+                        ],
+                        hint: const Text('Select an option'),
+                        onChanged: (value) async {
+                          var response = await GaragesService.getAllCategory();
+
+                          if (response.isNotEmpty) {
+                            setState(() {
+                              carSelected = true;
+                              Globals.allCategoryItems = response;
+                              _selectedCar = value as int;
+                            });
+                          }
+                          debugPrint("response: ${response.toString()}");
+                        },
+                      )
                     ],
-                  ),
-                  isSubmitProduct
-                      ? Center(
-                          child: SizedBox(
-                            height: 40,
-                            width: 40,
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : Container(
+                    if (carSelected) ...[
+                      const SizedBox(height: 20),
+                      DropdownButtonFormField(
+                        value: _selectedCategory,
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Select Category',
+                        ),
+                        items: [
+                          for (CategoryItems catItems
+                              in Globals.allCategoryItems)
+                            DropdownMenuItem(
+                                value: catItems.id,
+                                child: Text("${catItems.categoryName}"))
+                        ],
+                        hint: const Text('Select an option'),
+                        onChanged: (value) async {
+                          setState(() {
+                            _selectedCategory = value as int;
+                            categorySelected = true;
+                          });
+                          List<Price> price =
+                              await GaragesService.getProductPrice(
+                                  carId: _selectedCar!,
+                                  categoryId: _selectedCategory!,
+                                  garageId: Globals.garageId);
+
+                          if (price.isNotEmpty) {
+                            setState(() {
+                              priceOfEnquiry = price[0].price;
+                            });
+                          } else {
+                            setState(() {
+                              priceOfEnquiry = 0;
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Price not available'),
+                              ),
+                            );
+                          }
+                          debugPrint("price $price");
+                        },
+                      ),
+                    ],
+                    if (categorySelected && priceOfEnquiry != 0) ...[
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: Text(
+                          'Price : $priceOfEnquiry',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      )
+                    ],
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Container(
                           width: 200,
                           height: 40,
-                          // padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: ElevatedButton(
-                            onPressed: checkIfTheDataForSubmitComplete() ? () => submitProduct(context) : null,
-                            child: const Text('Submit'),
+                          child: loadLocation
+                              ? Center(
+                                  child: CircularProgressIndicator.adaptive())
+                              : ElevatedButton(
+                                  onPressed: () async {
+                                    await checkGps();
+                                    setState(() {
+                                      isLocation = true;
+                                    });
+                                  },
+                                  child: const Text('Pick Location'),
+                                ),
+                        ),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: 300,
+                          child: Text(
+                            style: TextStyle(fontSize: 16),
+                            address,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                ],
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                    isSubmitProduct
+                        ? Center(
+                            child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : Container(
+                            width: 200,
+                            height: 40,
+                            // padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: ElevatedButton(
+                              onPressed: checkIfTheDataForSubmitComplete()
+                                  ? () => submitProduct(context)
+                                  : null,
+                              child: const Text('Submit'),
+                            ),
+                          ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
           );

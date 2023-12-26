@@ -51,8 +51,8 @@ class _SubAdminHomeState extends State<SubAdminHome> {
               color: Color.fromARGB(255, 239, 239, 239),
               tabBackgroundColor: Color.fromARGB(255, 0, 0, 0),
               activeColor: Color.fromARGB(255, 215, 0, 0),
-              padding: EdgeInsets.all(16),
-              gap: 8,
+              padding: EdgeInsets.all(8),
+              gap: 5,
               onTabChange: (index) {
                 _navigateBottomBar(index);
               },
@@ -78,7 +78,10 @@ class _SubAdminHomeState extends State<SubAdminHome> {
       ),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 18, 18, 18),
-        title:  Text('JB Super Axel subAd',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'JB Super Axel subAd',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
               onPressed: () => logout(),
