@@ -1,17 +1,9 @@
-import 'dart:developer';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:loginuicolors/models/cars.dart';
-import 'package:loginuicolors/models/companies.dart';
-import 'package:loginuicolors/models/product_subadmin.dart';
-import 'package:loginuicolors/models/statesDecode.dart';
-import 'package:loginuicolors/services/enquiryService.dart';
-import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/services/subAdminService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
-import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../models/product_subadmin.dart';
 
 class ProductFormSubAdmin extends StatefulWidget {
   const ProductFormSubAdmin({super.key});

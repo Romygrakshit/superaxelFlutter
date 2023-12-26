@@ -1,10 +1,7 @@
 import 'dart:developer';
-import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/pastEnquiry.dart';
-
 import 'package:loginuicolors/utils/Globals.dart';
 import '../services/enquiryService.dart';
 
@@ -20,7 +17,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
   bool first = true;
 
   testApi() async {
-    List<PastEnquiry> newEnquiries = await EnquiryService.pastEnquiryList(Globals.garageId);
+    List<PastEnquiry> newEnquiries =
+        await EnquiryService.pastEnquiryList(Globals.garageId);
     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
     // log(enquiries.toString());
@@ -47,7 +45,9 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                 itemBuilder: (context, index) {
                   PastEnquiry enquiry = enquiries[index];
 
-                  final imageUrl = enquiry.imageUrl.replaceAll('/..', Globals.restApiUrl);
+                  final imageUrl =
+                      enquiry.imageUrl.replaceAll('/..', Globals.restApiUrl);
+                  log("$imageUrl");
                   return Container(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(22),
@@ -73,30 +73,43 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   ),
                                   SizedBox(width: 16),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Company Name: ${enquiry.company}',
                                         style: TextStyle(
-                                            color: Color.fromARGB(255, 239, 239, 239),
+                                            color: Color.fromARGB(
+                                                255, 239, 239, 239),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14),
                                       ),
                                       SizedBox(height: 4),
                                       Text(
                                         'Enquiry Number: ${enquiry.id}',
-                                        style: TextStyle(color: Color.fromARGB(255, 175, 175, 175), fontSize: 14),
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 175, 175, 175),
+                                            fontSize: 14),
                                       ),
-                                      SizedBox(height: 4), // add space between the first and second text
+                                      SizedBox(
+                                          height:
+                                              4), // add space between the first and second text
                                       Container(
-                                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                                        constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               enquiry.car_name,
                                               style: TextStyle(
-                                                  color: Color.fromARGB(255, 239, 239, 239),
+                                                  color: Color.fromARGB(
+                                                      255, 239, 239, 239),
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20),
                                             ),
@@ -104,11 +117,17 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                             Container(
                                               padding: EdgeInsets.all(5),
                                               decoration: BoxDecoration(
-                                                  border: Border.all(color: Color.fromARGB(255, 215, 0, 0)),
-                                                  borderRadius: BorderRadius.circular(10)),
+                                                  border: Border.all(
+                                                      color: Color.fromARGB(
+                                                          255, 215, 0, 0)),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
                                               child: Text(
                                                 enquiry.status.toUpperCase(),
-                                                style: TextStyle(color: Color.fromARGB(255, 215, 0, 0)),
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 215, 0, 0)),
                                               ),
                                             )
                                           ],
@@ -118,7 +137,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       Text(
                                         'Axel: ${enquiry.axel}',
                                         style: TextStyle(
-                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            color: Color.fromARGB(
+                                                255, 214, 214, 214),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16),
                                       ), // add more space between the second and third text
@@ -126,7 +146,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       Text(
                                         'Offered Price: ${enquiry.offeredPrice}',
                                         style: TextStyle(
-                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            color: Color.fromARGB(
+                                                255, 214, 214, 214),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16),
                                       ), // add more space between the second and third text
@@ -134,7 +155,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                       Text(
                                         'Address:',
                                         style: TextStyle(
-                                            color: Color.fromARGB(255, 214, 214, 214),
+                                            color: Color.fromARGB(
+                                                255, 214, 214, 214),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16),
                                       ),
@@ -142,7 +164,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                         width: 200,
                                         child: Text(
                                           style: TextStyle(
-                                              color: Color.fromARGB(255, 239, 239, 239),
+                                              color: Color.fromARGB(
+                                                  255, 239, 239, 239),
                                               // color: Colors.blue,
                                               fontSize: 16),
                                           enquiry.address,
@@ -151,7 +174,9 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                         ),
                                       ),
 
-                                      SizedBox(height: 4), // add space between the third and fourth text
+                                      SizedBox(
+                                          height:
+                                              4), // add space between the third and fourth text
                                       // Text(
                                       //   'Price: ${enquiry.offered_price}',
                                       //   style: TextStyle(

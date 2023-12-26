@@ -29,7 +29,12 @@ class _SubAdminHomeState extends State<SubAdminHome> {
     });
   }
 
-  final List<Widget> _pages = [SubAdminEnquiries(), CreateInventory(), ProductFormSubAdmin(), SubAdminProfile()];
+  final List<Widget> _pages = [
+    SubAdminEnquiries(),
+    CreateInventory(),
+    ProductFormSubAdmin(),
+    SubAdminProfile()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +78,7 @@ class _SubAdminHomeState extends State<SubAdminHome> {
       ),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 18, 18, 18),
-        title: const Text('JB Super Axel'),
+        title:  Text('JB Super Axel subAd',style: TextStyle(color: Colors.white),),
         actions: [
           IconButton(
               onPressed: () => logout(),

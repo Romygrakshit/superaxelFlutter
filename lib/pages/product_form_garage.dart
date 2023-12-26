@@ -7,8 +7,6 @@ import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/category.dart';
 import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/models/price.dart';
-import 'package:loginuicolors/models/statesDecode.dart';
-import 'package:loginuicolors/services/enquiryService.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
@@ -240,7 +238,7 @@ class _ProductFormState extends State<ProductForm> {
                       value: _selectedCar,
                       items: [
                         for (Cars car in Globals.allCars)
-                          DropdownMenuItem(value: car.id, child: Text("${car.car_name}"))
+                          DropdownMenuItem(value: car.id, child: Text("${car.carName}"))
                       ],
                       hint: const Text('Select an option'),
                       onChanged: (value) async {

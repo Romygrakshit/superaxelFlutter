@@ -1,26 +1,25 @@
 import 'dart:convert';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Cars {
   int id;
-  String car_name;
+  String carName;
   Cars({
     required this.id,
-    required this.car_name,
+    required this.carName,
   });
   
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'car_name': car_name,
+      'car_name': carName,
     };
   }
 
   factory Cars.fromMap(Map<String, dynamic> map) {
     return Cars(
       id: map['id'] as int,
-      car_name: map['car_name'] as String,
+      carName: map['car_name'] as String,
     );
   }
 

@@ -1,9 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
 import 'package:loginuicolors/models/enquriyModel.dart';
 import 'package:loginuicolors/services/subAdminService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
@@ -42,7 +38,7 @@ class EditEnqSubAdmin extends HookWidget {
       }
     }
 
-    final imageUrls = enqury.imagesUrls.map((e) => e.replaceAll('/..', Globals.restApiUrl)).toList();
+    final imageUrls = enqury.imagesUrlsEnquiry!.map((e) => e.replaceAll('/..', Globals.restApiUrl)).toList();
 
     useEffect(() {
       status.value = enqury.status;
@@ -53,125 +49,139 @@ class EditEnqSubAdmin extends HookWidget {
       child: Scaffold(
         body: Form(
           key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('The id is : ' + enqury.id.toString()),
-                Text('The mobile number is : ' + enqury.mobile_number.toString()),
-                Text('The address is : ' + enqury.address),
-                Text('The guaranted price is : ' + enqury.offered_price),
-                Text('The status is: ' + enqury.status),
-                SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: _newOfferedPrice,
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Enter some value';
-                    }
-                    if (value.length > 0) {
-                      return null;
-                    }
-                    return 'Enter valid price';
-                  },
-                  decoration: InputDecoration(
-                    label: Text('Enter the new offered price'),
-                    border: OutlineInputBorder(),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('The id is : ' + enqury.id.toString()),
+                  Text('The mobile number is : ' + enqury.mobile_number.toString()),
+                  Text('The address is : ' + enqury.address),
+                  Text('The guaranted price is : ' + enqury.offered_price),
+                  Text('The status is: ' + enqury.status),
+                  SizedBox(
+                    height: 20,
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                DropdownButtonFormField(
-                    isDense: true,
-                    value: enqury.status,
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _newOfferedPrice,
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Enter some value';
+                      }
+                      if (value.length > 0) {
+                        return null;
+                      }
+                      return 'Enter valid price';
+                    },
                     decoration: InputDecoration(
-                      labelText: 'Enter the new Status',
+                      label: Text('Enter the new offered price'),
                       border: OutlineInputBorder(),
                     ),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'pending',
-                        child: Text('pending'),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  DropdownButtonFormField(
+                      isDense: true,
+                      value: enqury.status,
+                      decoration: InputDecoration(
+                        labelText: 'Enter the new Status',
+                        border: OutlineInputBorder(),
                       ),
-                      DropdownMenuItem(
-                        value: 'Out for delivery',
-                        child: Text('Out for delivery'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Delivered',
-                        child: Text('Delivered'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Cancel',
-                        child: Text('Cancel'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      debugPrint("value is $value");
-                      status.value = value.toString();
-                    }),
-                const SizedBox(height: 20),
-                imageUrls.isEmpty
-                    ? const SizedBox.shrink()
-                    : Container(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        height: 200,
-                        child: Scrollbar(
-                          thumbVisibility: true, //always show scrollbar
-                          thickness: 4, //width of scrollbar
-                          radius: Radius.circular(20), //corner radius of scrollbar
-                          controller: _scrollController,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
+                      items: [
+                        DropdownMenuItem(
+                          value: 'pending',
+                          child: Text('pending'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Out for delivery',
+                          child: Text('Out for delivery'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'delivered',
+                          child: Text('delivered'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'cancel',
+                          child: Text('cancel'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        debugPrint("value is $value");
+                        status.value = value.toString();
+                      }),
+                  const SizedBox(height: 20),
+                  imageUrls.isEmpty
+                      ? const SizedBox.shrink()
+                      : Container(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          height: 200,
+                          child: Scrollbar(
+                            thumbVisibility: true, //always show scrollbar
+                            thickness: 4, //width of scrollbar
+                            radius: Radius.circular(20), //corner radius of scrollbar
                             controller: _scrollController,
-                            itemCount: imageUrls.length,
-                            separatorBuilder: (context, index) => Container(
-                              height: 20,
-                              width: 20,
-
-                              // margin: const EdgeInsets.symmetric(vertical: 10),
-                              // child: Column(
-                              //   children: [
-                              //     Text(
-                              //       "Image ${index + 1}",
-                              //       style: TextStyle(color: Colors.black, fontSize: 14),
-                              //     ),
-                              //     const Divider(color: Colors.grey, thickness: 2),
-                              //   ],
-                              // ),
-                            ),
-                            itemBuilder: (context, index) {
-                              String imageUrl = imageUrls[index].toString().replaceAll('..', '');
-                              imageUrl = imageUrl.replaceAll('file://', '');
-                              imageUrl = Globals.restApiUrl + imageUrl;
-                              return SizedBox(
-                                height: 200,
-                                width: 200,
-                                child: Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.contain,
-                                ),
-                              );
-                            },
+                            child:ListView.builder(
+                              controller: _scrollController,
+                              itemCount: imageUrls.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  height: 200,
+                                  width: 200,
+                                  margin: EdgeInsets.only(left: 12,right:12,bottom:5),
+                                  child: Image.network(
+                                    imageUrls[index],
+                                    fit: BoxFit.contain,
+                                  ),
+                                );
+                              },)
+                            //  ListView.separated(
+                            //   controller: _scrollController,
+                            //   itemCount: imageUrls.length,
+                            //   separatorBuilder: (context, index) => Container(
+                            //     height: 20,
+                            //     width: 20,
+                            //     margin: const EdgeInsets.symmetric(vertical: 10),
+                            //     child: Column(
+                            //       children: [
+                            //         Text(
+                            //           "Image ${index + 1}",
+                            //           style: TextStyle(color: Colors.black, fontSize: 14),
+                            //         ),
+                            //         const Divider(color: Colors.grey, thickness: 2),
+                            //       ],
+                            //     ),
+                            //   ),
+                            //   itemBuilder: (context, index) {
+                            //     String imageUrl = imageUrls[index].toString().replaceAll('..', '');
+                            //     imageUrl = imageUrl.replaceAll('file://', '');
+                            //     imageUrl = Globals.restApiUrl + imageUrl;
+                            //     return SizedBox(
+                            //       height: 200,
+                            //       width: 200,
+                            //       child: Image.network(
+                            //         imageUrl,
+                            //         fit: BoxFit.contain,
+                            //       ),
+                            //     );
+                            //   },
+                            // ),
                           ),
                         ),
-                      ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      debugPrint("status is ${status.value}");
-                      await updateEnquiry(context, enqury);
-                    },
-                    child: Text('Submit Updates'),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        debugPrint("status is ${status.value}");
+                        await updateEnquiry(context, enqury);
+                      },
+                      child: Text('Submit Updates'),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -11,8 +11,14 @@ import 'package:http/http.dart' as http;
 class SubAdminService {
   static const String _baseUrl = '${Globals.restApiUrl}/subadmins/api';
 
-  static createInventory(String carname, String subadminId, String leftAxelPrice, String leftAxelInventory,
-      String rightAxelPrice, String rightAxelInventory, BuildContext context) async {
+  static createInventory(
+      String carname,
+      String subadminId,
+      String leftAxelPrice,
+      String leftAxelInventory,
+      String rightAxelPrice,
+      String rightAxelInventory,
+      BuildContext context) async {
     Uri responseUri = Uri.parse('$_baseUrl/createInventory');
     http.Response response = await http.post(responseUri, body: {
       'car_name': carname,
@@ -26,25 +32,27 @@ class SubAdminService {
     log(decoded.toString());
     if (decoded['success']) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Created the new Inventory')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Created the new Inventory')));
     }
   }
 
-  static Future<List<Enquiry>> getEnqbyState(int subAdminId) async {
+  static Future<List<Enquiry>> getEnqbyState(String subAdminId) async {
     try {
       List<Enquiry> dedcodedEnq = [];
       Uri responseUri = Uri.parse('$_baseUrl/getEnqbyState');
       final response = await http.post(
         responseUri,
-        body: {'sID': subAdminId.toString()},
+        body: {'sID': subAdminId},
       );
       var decoded = jsonDecode(response.body);
-      // log(decoded.toString());
+       log(response.body);
       var enquiries = decoded["data"];
       for (var enq in enquiries) {
         Enquiry newenq = Enquiry.fromMap(enq);
         dedcodedEnq.add(newenq);
       }
+      log("$dedcodedEnq");
       return dedcodedEnq;
     } catch (e) {
       debugPrint("error is $e");
@@ -59,13 +67,15 @@ class SubAdminService {
     log(decoded.toString());
     log(response.statusCode.toString());
     if (response.statusCode >= 200 || response.statusCode <= 300) {
+      log(response.body);
       return true;
     } else {
       return false;
     }
   }
 
-  static Future<List<ProductSUbadmin>> getProductEnquiryListSubAdmin(int subadminId) async {
+  static Future<List<ProductSUbadmin>> getProductEnquiryListSubAdmin(
+      int subadminId) async {
     try {
       ApiServices apiServices = ApiServices(http.Client());
 
@@ -87,7 +97,8 @@ class SubAdminService {
       List<ProductSUbadmin> productEnquiryListSubAdmin = [];
 
       for (var productEnquiry in productEnquiryList) {
-        ProductSUbadmin newProductEnquiry = ProductSUbadmin.fromMap(productEnquiry);
+        ProductSUbadmin newProductEnquiry =
+            ProductSUbadmin.fromMap(productEnquiry);
         productEnquiryListSubAdmin.add(newProductEnquiry);
       }
 

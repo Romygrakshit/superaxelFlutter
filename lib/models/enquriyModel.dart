@@ -9,19 +9,20 @@ class Enquiry {
   String lng;
   int company_id;
   int car_id;
+  String? company;
+  String? car_name;
+  String? garageName;
+  String? mobile_number;
   String axel;
   String offered_price;
   String? date_time;
   String status;
   // String? image_id;
-  String? delivery_boy;
   String state;
+  String? delivery_boy;
   String? name;
-  String? mobile_number;
-  String? company;
-  String? car_name;
   List<String> imagesUrls;
-  String? garageName;
+  List<String>? imagesUrlsEnquiry;
   Enquiry({
     required this.id,
     // required this.garage_id,
@@ -42,6 +43,7 @@ class Enquiry {
     this.company,
     this.car_name,
     required this.imagesUrls,
+    this.imagesUrlsEnquiry,
     this.garageName,
   });
 
@@ -65,6 +67,8 @@ class Enquiry {
       'mobile_number': mobile_number,
       'company': company,
       'car_name': car_name,
+      'garage_image':imagesUrls,
+      'image_urls': imagesUrlsEnquiry,
     };
   }
 
@@ -90,6 +94,7 @@ class Enquiry {
       car_name: map['car_name'] != null ? map['car_name'] as String : null,
       // it return strings of urls separated by comma
       imagesUrls: map['garage_image'] != null ? map['garage_image'].toString().split(',') : [],
+      imagesUrlsEnquiry: map['image_urls'] != null ? (map['image_urls'] as List<dynamic>).cast<String>(): [],
       garageName: map['garage_name'] != null ? map['garage_name'] as String : null,
     );
   }

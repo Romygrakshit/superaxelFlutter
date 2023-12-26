@@ -39,7 +39,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color.fromARGB(255, 18, 18, 18),
-          title: const Text('JB Super Axel'),
+          title: Text(
+            'JB Super Axel',
+            style: TextStyle(color: Colors.white),
+          ),
           actions: [
             IconButton(
                 onPressed: () => logout(),
@@ -58,7 +61,8 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: Container(
           color: Color.fromARGB(255, 18, 18, 18),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
             child: GNav(
                 backgroundColor: Color.fromARGB(255, 18, 18, 18),
                 color: Color.fromARGB(255, 239, 239, 239),

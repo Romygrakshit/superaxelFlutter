@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/companies.dart';
-import 'package:loginuicolors/models/statesDecode.dart';
 import 'package:loginuicolors/services/enquiryService.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
@@ -199,11 +198,11 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         value: _selectedCar,
                         items: [
                           for (Cars car in Globals.allCars)
-                            DropdownMenuItem(value: car.id, child: Text("${car.car_name}"))
+                            DropdownMenuItem(value: car.id, child: Text("${car.carName}"))
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
-                          _selectedCarName = Globals.allCars.firstWhere((element) => element.id == value).car_name;
+                          _selectedCarName = Globals.allCars.firstWhere((element) => element.id == value).carName;
                           var response = await GaragesService.getPrices(int.parse(value.toString()), Globals.garageId);
 
                           if (response.isEmpty) {

@@ -83,7 +83,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                 items: [
                   for (Cars car in Globals.allCars)
                     DropdownMenuItem(
-                        value: car.car_name, child: Text("${car.car_name}"))
+                        value: car.carName, child: Text("${car.carName}"))
                 ],
                 hint: const Text('Select an option'),
                 onChanged: (value) async {
