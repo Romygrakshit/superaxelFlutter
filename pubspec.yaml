@@ -28,8 +28,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.20.0
-  geocoding: ^2.1.0
-  geolocator: ^9.0.2
+  geocoding: ^2.1.1
+  geolocator: ^10.1.0
   google_nav_bar: ^5.0.6
   http: ^0.13.6
   image_picker: null
