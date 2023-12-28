@@ -117,6 +117,7 @@ class MyLogin extends HookWidget {
                                   Text(
                                     'Sign in',
                                     style: TextStyle(
+                                      color: Colors.white,
                                         fontSize: 27,
                                         fontWeight: FontWeight.w700),
                                   ),
@@ -166,17 +167,17 @@ class MyLogin extends HookWidget {
                                     ),
                                     style: ButtonStyle(),
                                   ),
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        'Forgot Password',
-                                        style: TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: 18,
-                                        ),
-                                      )),
+                                  // TextButton(
+                                  //     onPressed: () {},
+                                  //     child: Text(
+                                  //       'Forgot Password',
+                                  //       style: TextStyle(
+                                  //         decoration: TextDecoration.underline,
+                                  //         color: Color.fromARGB(
+                                  //             255, 255, 255, 255),
+                                  //         fontSize: 18,
+                                  //       ),
+                                  //     )),
                                 ],
                               )
                             ],

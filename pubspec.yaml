@@ -36,6 +36,7 @@ dependencies:
   open_street_map_search_and_pick: ^0.1.0
   share_plus: ^6.0.0
   shared_preferences: ^2.1.0
+  gallery_saver: ^2.3.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

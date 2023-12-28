@@ -83,7 +83,6 @@ class GaragesService {
           return json;
         },
       );
-
       var decoded = result;
       log(decoded.toString(), name: "Garage login response: ");
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -97,9 +96,11 @@ class GaragesService {
         var city = decoded['data']['garage']['city'];
         Globals.garageAddress = '$add,$city,$state';
         final prefs = await SharedPreferences.getInstance();
+        String originalUrl = decoded["data"]["garage"]["url"];
+        String modifiedUrl = originalUrl.replaceAll(RegExp(r'.*?/img'), '/img');
         await prefs.setString('authToken', decoded['data']['token']);
         await prefs.setString('number', mobileNumber);
-        await prefs.setString('url', decoded["data"]["garage"]["url"]);
+        await prefs.setString('url', modifiedUrl); // Use the modified URL here
         await prefs.setBool('garage', true);
         Navigator.pushReplacementNamed(context, 'Home');
       }

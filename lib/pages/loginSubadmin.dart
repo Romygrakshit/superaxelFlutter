@@ -10,16 +10,14 @@ class LoginSubAdmin extends StatefulWidget {
 }
 
 class _LoginSubAdminState extends State<LoginSubAdmin> {
-
-   TextEditingController _mob_number = TextEditingController();
+  TextEditingController _mob_number = TextEditingController();
   TextEditingController _password = TextEditingController();
   final _loginKey = GlobalKey<FormState>();
 
   login(BuildContext context) async {
-    
-        GaragesService.loginSubAdmin(context, _mob_number.text, _password.text);
-
+    GaragesService.loginSubAdmin(context, _mob_number.text, _password.text);
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -84,7 +82,9 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   TextButton(
-                                      onPressed: ()=>Navigator.pushReplacementNamed(context, 'login'),
+                                      onPressed: () =>
+                                          Navigator.pushReplacementNamed(
+                                              context, 'login'),
                                       child: Text(
                                         "Login as Garage Owner",
                                         style: TextStyle(
@@ -106,6 +106,7 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
                                   Text(
                                     'Sign in',
                                     style: TextStyle(
+                                        color: Colors.white,
                                         fontSize: 27,
                                         fontWeight: FontWeight.w700),
                                   ),
@@ -147,17 +148,17 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
                                     ),
                                     style: ButtonStyle(),
                                   ),
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        'Forgot Password',
-                                        style: TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: 18,
-                                        ),
-                                      )),
+                                  // TextButton(
+                                  //     onPressed: () {},
+                                  //     child: Text(
+                                  //       'Forgot Password',
+                                  //       style: TextStyle(
+                                  //         decoration: TextDecoration.underline,
+                                  //         color: Color.fromARGB(
+                                  //             255, 255, 255, 255),
+                                  //         fontSize: 18,
+                                  //       ),
+                                  //     )),
                                 ],
                               )
                             ],
