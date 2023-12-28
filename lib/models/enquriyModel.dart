@@ -3,45 +3,41 @@ import 'dart:convert';
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Enquiry {
   int id;
-  // int garage_id;
   String address;
   String lat;
   String lng;
-  int company_id;
-  int car_id;
+  int companyId;
+  int carId;
   String? company;
-  String? car_name;
+  String? carName;
   String? garageName;
-  String? mobile_number;
+  String? mobileNumber;
   String axel;
-  String offered_price;
-  String? date_time;
+  String offeredPrice;
+  String? dateTime;
   String status;
-  // String? image_id;
   String state;
-  String? delivery_boy;
+  String? deliveryBoy;
   String? name;
   List<String> imagesUrls;
   List<String>? imagesUrlsEnquiry;
   Enquiry({
     required this.id,
-    // required this.garage_id,
     required this.address,
     required this.lat,
     required this.lng,
-    required this.company_id,
-    required this.car_id,
+    required this.companyId,
+    required this.carId,
     required this.axel,
-    required this.offered_price,
-    this.date_time,
+    required this.offeredPrice,
+    this.dateTime,
     required this.status,
-    // this.image_id,
-    this.delivery_boy,
+    this.deliveryBoy,
     required this.state,
     this.name,
-    this.mobile_number,
+    this.mobileNumber,
     this.company,
-    this.car_name,
+    this.carName,
     required this.imagesUrls,
     this.imagesUrlsEnquiry,
     this.garageName,
@@ -50,23 +46,21 @@ class Enquiry {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      // 'garage_id': garage_id,
       'address': address,
       'lat': lat,
       'lng': lng,
-      'company_id': company_id,
-      'car_id': car_id,
+      'company_id': companyId,
+      'car_id': carId,
       'axel': axel,
-      'offered_price': offered_price,
-      'date_time': date_time,
+      'offered_price': offeredPrice,
+      'date_time': dateTime,
       'status': status,
-      // 'image_id': image_id,
-      'delivery_boy': delivery_boy,
+      'delivery_boy': deliveryBoy,
       'state': state,
       'name': name,
-      'mobile_number': mobile_number,
+      'mobile_number': mobileNumber,
       'company': company,
-      'car_name': car_name,
+      'car_name': carName,
       'garage_image':imagesUrls,
       'image_urls': imagesUrlsEnquiry,
     };
@@ -75,24 +69,19 @@ class Enquiry {
   factory Enquiry.fromMap(Map<String, dynamic> map) {
     return Enquiry(
       id: map['id'] as int,
-      // garage_id: map['garage_id'] as int,
       address: map['address'] as String,
       lat: map['lat'] as String,
       lng: map['lng'] as String,
-      company_id: map['company_id'] as int,
-      car_id: map['car_id'] as int,
+      companyId: map['company_id'] as int,
+      carId: map['car_id'] as int,
       axel: map['axel'] as String,
-      offered_price: map['offered_price'] as String,
-      date_time: map['date_time'] as String,
+      offeredPrice: map['offered_price'] as String,
+      dateTime: map['date_time'] as String,
       status: map['status'] as String,
-      // image_id: map['images_id'] != null ? map['images_id'] as String : null,
-      // delivery_boy: map['delivery_boy']!=nu as String,
       state: map['state'] as String,
-      // name: map['name'] != null ? map['name'] as String : null,
-      mobile_number: map['mobile_number'] != null ? map['mobile_number'] as String : null,
+      mobileNumber: map['mobile_number'] != null ? map['mobile_number'] as String : null,
       company: map['company'] != null ? map['company'] as String : null,
-      car_name: map['car_name'] != null ? map['car_name'] as String : null,
-      // it return strings of urls separated by comma
+      carName: map['car_name'] != null ? map['car_name'] as String : null,
       imagesUrls: map['garage_image'] != null ? map['garage_image'].toString().split(',') : [],
       imagesUrlsEnquiry: map['image_urls'] != null ? (map['image_urls'] as List<dynamic>).cast<String>(): [],
       garageName: map['garage_name'] != null ? map['garage_name'] as String : null,

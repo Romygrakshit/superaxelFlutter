@@ -10,12 +10,12 @@ class LoginSubAdmin extends StatefulWidget {
 }
 
 class _LoginSubAdminState extends State<LoginSubAdmin> {
-  TextEditingController _mob_number = TextEditingController();
+  TextEditingController mobNumber = TextEditingController();
   TextEditingController _password = TextEditingController();
   final _loginKey = GlobalKey<FormState>();
 
   login(BuildContext context) async {
-    GaragesService.loginSubAdmin(context, _mob_number.text, _password.text);
+    GaragesService.loginSubAdmin(context, mobNumber.text, _password.text);
   }
 
   @override
@@ -50,7 +50,7 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
                             children: [
                               TextFormField(
                                 keyboardType: TextInputType.number,
-                                controller: _mob_number,
+                                controller: mobNumber,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                     fillColor: Colors.grey.shade100,

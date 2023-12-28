@@ -141,7 +141,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                           height:
                                               4), // add more space between the second and third text
                                       Text(
-                                        'Car: ${enquiry.car_name}',
+                                        'Car: ${enquiry.carName}',
                                         style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 214, 214, 214),
@@ -152,7 +152,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                           height:
                                               4), // add more space between the second and third text
                                       Text(
-                                        'Mobile No: ${enquiry.mobile_number}',
+                                        'Mobile No: ${enquiry.mobileNumber}',
                                         style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 214, 214, 214),
@@ -197,7 +197,7 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Price: ${enquiry.offered_price}',
+                                              'Price: ${enquiry.offeredPrice}',
                                               style: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 215, 0, 0),
@@ -216,9 +216,9 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                                   String textToShare = """
                                                     Enquiry Id : ${enquiry.id}
                                                     Company: ${enquiry.company}
-                                                    Car: ${enquiry.car_name}
+                                                    Car: ${enquiry.carName}
                                                     Axel Type: ${enquiry.axel}
-                                                    Price: ${enquiry.offered_price}
+                                                    Price: ${enquiry.offeredPrice}
                                                     Status: ${enquiry.status}
                                                     Garage name: ${enquiry.garageName}
                                                     Garage address: ${enquiry.address}

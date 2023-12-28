@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/category.dart';
 import 'package:loginuicolors/models/companies.dart';

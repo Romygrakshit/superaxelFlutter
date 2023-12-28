@@ -19,8 +19,8 @@ class _CreateInventoryState extends State<CreateInventory> {
   double lat = 0;
   double long = 0;
   String address = '';
-  bool CompanySelected = false;
-  bool CarSelected = false;
+  bool companySelected = false;
+  bool carSelected = false;
   TextEditingController leftPrice = TextEditingController();
   TextEditingController leftInventory = TextEditingController();
   TextEditingController rightprice = TextEditingController();
@@ -66,14 +66,14 @@ class _CreateInventoryState extends State<CreateInventory> {
                 Globals.allCars = cars;
                 setState(() {
                   _selectedCompany = value.toString();
-                  CompanySelected = true;
+                  companySelected = true;
                 });
               },
             ),
             SizedBox(
               height: 30,
             ),
-            if (CompanySelected)
+            if (companySelected)
               DropdownButtonFormField(
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -89,14 +89,14 @@ class _CreateInventoryState extends State<CreateInventory> {
                 onChanged: (value) async {
                   setState(() {
                     _selectedCar = value.toString();
-                    CarSelected = true;
+                    carSelected = true;
                   });
                 },
               ),
             SizedBox(
               height: 30,
             ),
-            if (CarSelected)
+            if (carSelected)
               Form(
                 key: _formKey,
                 child: Column(

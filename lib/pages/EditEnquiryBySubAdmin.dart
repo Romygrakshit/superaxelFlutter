@@ -66,9 +66,9 @@ class EditEnqSubAdmin extends HookWidget {
                 children: [
                   Text('The id is : ' + enqury.id.toString()),
                   Text('The mobile number is : ' +
-                      enqury.mobile_number.toString()),
+                      enqury.mobileNumber.toString()),
                   Text('The address is : ' + enqury.address),
-                  Text('The guaranted price is : ' + enqury.offered_price),
+                  Text('The guaranted price is : ' + enqury.offeredPrice),
                   Text('The status is: ' + enqury.status),
                   SizedBox(
                     height: 20,

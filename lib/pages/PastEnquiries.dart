@@ -106,7 +106,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              enquiry.car_name,
+                                              enquiry.carName,
                                               style: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 239, 239, 239),

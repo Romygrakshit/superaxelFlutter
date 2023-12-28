@@ -111,7 +111,7 @@ class _MyRegisterState extends State<MyRegister> {
     });
   }
 
-  Future<Position> _getCurrentLocation(BuildContext context) async {
+  Future<Position> getCurrentLocation(BuildContext context) async {
     bool serviceEnabled;
     LocationPermission permission;
 
