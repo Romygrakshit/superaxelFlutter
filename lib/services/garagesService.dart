@@ -48,10 +48,8 @@ class GaragesService {
     };
     request.fields.addAll(data);
     request.files.add(multipartFile);
-
     // send
     var response = await request.send();
-
     // listen for response
     response.stream.transform(utf8.decoder).listen((value) async {
       log(value);
@@ -63,6 +61,9 @@ class GaragesService {
       var city = decoded['data']['garage']['city'];
       Globals.garageAddress = '$add,$city,$state';
       final prefs = await SharedPreferences.getInstance();
+      String imageUrl = decoded["data"]["garage"]["url"];
+      String modifiedUrl = imageUrl.replaceAll(RegExp(r'.*?/img'), '/img');
+      await prefs.setString('url', modifiedUrl);
       await prefs.setString('authToken', decoded['data']['token']);
       await prefs.setString('number', mobileNumber);
       Navigator.pushReplacementNamed(context, 'Home');
