@@ -32,8 +32,16 @@ class EnquiryService {
     }
   }
 
-  static void createEnquiry(List<File> _image, String address, String lat, String lng, String company, String carName,
-      String axel, String offeredPrice, BuildContext context) async {
+  static void createEnquiry(
+      List<File> _image,
+      String address,
+      String lat,
+      String lng,
+      String company,
+      String carName,
+      String axel,
+      String offeredPrice,
+      BuildContext context) async {
     var uri = Uri.parse('$_baseUrl/create');
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
@@ -49,19 +57,22 @@ class EnquiryService {
     request.fields['axel'] = axel;
     request.fields['offered_price'] = offeredPrice;
 
-    log(request.fields.toString());
-    print('enquiry request data: ${request.fields.toString()}');
+    log(request.fields.toString(), name: "enquiry request data:");
+    // print('enquiry request data: ${request.fields.toString()}');
 
     for (var i = 0; i < _image.length; i++) {
       String extension = _image[i].path.split('.').last.toLowerCase();
       if (extension == 'jpg' || extension == 'jpeg' || extension == 'png') {
         request.files.add(http.MultipartFile(
-            'enquiryImages', File(_image[i].path).readAsBytes().asStream(), File(_image[i].path).lengthSync(),
-            filename: basename(_image[i].path.split("/").last), contentType: MediaType('image', extension)));
+            'enquiryImages',
+            File(_image[i].path).readAsBytes().asStream(),
+            File(_image[i].path).lengthSync(),
+            filename: basename(_image[i].path.split("/").last),
+            contentType: MediaType('image', extension)));
       }
     }
-
-    print('enquiry request files: ${request.files.toString()}');
+    log(request.files.toString(), name: "enquiry request files:");
+    // print('enquiry request files: ${request.files.toString()}');
 
     try {
       var response = await request.send();
@@ -70,9 +81,48 @@ class EnquiryService {
         var decoded = jsonDecode(value);
         log(decoded.toString());
         if (decoded['success']) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Enquiry Created")));
-          Navigator.pushReplacementNamed(context, 'Home');
+          showDialog(
+            context: context,
+            builder: (context) {
+              return Center(
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.14,
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.symmetric(horizontal: 50),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white54,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Enquiry Created",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w500),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, 'Home');
+                          },
+                          child: Text(
+                            "Ok",
+                            // textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.blue[700]),
+                          ))
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+          // showDialog(
+          //   title: Text("Enquiy Created"),
+          //   actions: [
+          //     TextButton(onPressed: () {
+          // Navigator.pushReplacementNamed(context, 'Home');
+          //     }, child: Text("Ok",style: TextStyle(color: Colors.blue[700]),))
+          //   ],
+          // );
         }
       });
     } catch (e) {

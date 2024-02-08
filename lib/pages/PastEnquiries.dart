@@ -53,143 +53,138 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                       borderRadius: BorderRadius.circular(22),
                       child: Card(
                         color: Color.fromARGB(255, 10, 10, 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: NetworkImage(imageUrl),
-                                        fit: BoxFit.cover,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(imageUrl),
+                                    fit: BoxFit.cover,
                                   ),
-                                  SizedBox(width: 16),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Company Name: ${enquiry.company}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 239, 239, 239),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Enquiry Number: ${enquiry.id}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 175, 175, 175),
-                                            fontSize: 14),
-                                      ),
-                                      SizedBox(
-                                          height:
-                                              4), // add space between the first and second text
-                                      Container(
-                                        constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.5),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              enquiry.carName,
-                                              style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 239, 239, 239),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
-                                            // SizedBox(width:100 ,),
-                                            Container(
-                                              padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Color.fromARGB(
-                                                          255, 215, 0, 0)),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Text(
-                                                enquiry.status.toUpperCase(),
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 215, 0, 0)),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Axel: ${enquiry.axel}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 214, 214, 214),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ), // add more space between the second and third text
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Offered Price: ${enquiry.offeredPrice}',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 214, 214, 214),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ), // add more space between the second and third text
-                                      SizedBox(height: 2),
-                                      Text(
-                                        'Address:',
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 214, 214, 214),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        width: 200,
-                                        child: Text(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Company Name: ${enquiry.company}',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 239, 239, 239),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Enquiry Number: ${enquiry.id}',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 175, 175, 175),
+                                        fontSize: 14),
+                                  ),
+                                  SizedBox(
+                                      height:
+                                          4), // add space between the first and second text
+                                  Container(
+                                    // constraints: BoxConstraints(
+                                    //     maxWidth: MediaQuery.of(context)
+                                    //             .size
+                                    //             .width *
+                                    //         0.5),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          enquiry.carName,
                                           style: TextStyle(
                                               color: Color.fromARGB(
                                                   255, 239, 239, 239),
-                                              // color: Colors.blue,
-                                              fontSize: 16),
-                                          enquiry.address,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
                                         ),
-                                      ),
-
-                                      SizedBox(
-                                          height:
-                                              4), // add space between the third and fourth text
-                                      // Text(
-                                      //   'Price: ${enquiry.offered_price}',
-                                      //   style: TextStyle(
-                                      //       color: Color.fromARGB(255, 215, 0, 0),
-                                      //       fontWeight: FontWeight.bold,
-                                      //       fontSize: 16),
-                                      // ),
-                                    ],
+                                        // SizedBox(width:100 ,),
+                                        Container(
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Color.fromARGB(
+                                                      255, 215, 0, 0)),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      10)),
+                                          child: Text(
+                                            enquiry.status.toUpperCase(),
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 215, 0, 0)),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Axel: ${enquiry.axel}',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 214, 214, 214),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ), // add more space between the second and third text
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Offered Price: ${enquiry.offeredPrice}',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 214, 214, 214),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ), // add more space between the second and third text
+                                  SizedBox(height: 2),
+                                  Text(
+                                    'Address:',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 214, 214, 214),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    width: 200,
+                                    child: Text(
+                                      style: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 239, 239, 239),
+                                          // color: Colors.blue,
+                                          fontSize: 16),
+                                      enquiry.address,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                      height:
+                                          4), // add space between the third and fourth text
+                                  // Text(
+                                  //   'Price: ${enquiry.offered_price}',
+                                  //   style: TextStyle(
+                                  //       color: Color.fromARGB(255, 215, 0, 0),
+                                  //       fontWeight: FontWeight.bold,
+                                  //       fontSize: 16),
+                                  // ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
