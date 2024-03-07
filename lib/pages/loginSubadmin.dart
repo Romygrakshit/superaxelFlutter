@@ -15,7 +15,7 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
   final _loginKey = GlobalKey<FormState>();
 
   login(BuildContext context) async {
-    GaragesService.loginSubAdmin(context, mobNumber.text, _password.text);
+    GaragesService().loginSubAdmin(context, mobNumber.text, _password.text);
   }
 
   @override
@@ -31,7 +31,7 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
               Container(
                 padding: EdgeInsets.only(left: 35, top: 130),
                 child: Text(
-                  'Welcome\nBack',
+                  'Welcome\nAdmin',
                   style: TextStyle(color: Colors.white, fontSize: 33),
                 ),
               ),
@@ -128,39 +128,6 @@ class _LoginSubAdminState extends State<LoginSubAdmin> {
                               SizedBox(
                                 height: 40,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pushReplacementNamed(
-                                          context, 'register');
-                                    },
-                                    child: Text(
-                                      'Sign Up',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: 18),
-                                    ),
-                                    style: ButtonStyle(),
-                                  ),
-                                  // TextButton(
-                                  //     onPressed: () {},
-                                  //     child: Text(
-                                  //       'Forgot Password',
-                                  //       style: TextStyle(
-                                  //         decoration: TextDecoration.underline,
-                                  //         color: Color.fromARGB(
-                                  //             255, 255, 255, 255),
-                                  //         fontSize: 18,
-                                  //       ),
-                                  //     )),
-                                ],
-                              )
                             ],
                           ),
                         ),

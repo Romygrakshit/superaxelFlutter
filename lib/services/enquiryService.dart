@@ -18,7 +18,7 @@ class EnquiryService {
       Uri responseUri = Uri.parse("$_baseUrl/list/$garageId");
       http.Response response = await http.get(responseUri);
       Map decoded = jsonDecode(response.body);
-      log(decoded.toString());
+      print(decoded.toString());
       var enquiries = decoded["data"];
       dedcodedEnq = [];
       for (var enq in enquiries) {
@@ -79,7 +79,7 @@ class EnquiryService {
       response.stream.transform(utf8.decoder).listen((value) async {
         log(value);
         var decoded = jsonDecode(value);
-        log(decoded.toString());
+        print(decoded.toString());
         if (decoded['success']) {
           showDialog(
             context: context,
@@ -127,6 +127,39 @@ class EnquiryService {
       });
     } catch (e) {
       print('Error sending enquiry request: $e');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.14,
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.symmetric(horizontal: 50),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white54,
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "$e",
+                    style: TextStyle(fontSize: 14,),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Ok",
+                        // textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.blue[700]),
+                      ))
+                ],
+              ),
+            ),
+          );
+        },
+      );
     }
   }
 

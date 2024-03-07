@@ -16,5 +16,6 @@ class Globals {
   static int subAdminId = 0;
   static String subAdminName = '';
   static String subAdminState = '';
+  static String subAdminDeviceToken = '';
   static String subAdminMobileNumber = '';
 }

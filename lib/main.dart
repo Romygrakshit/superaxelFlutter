@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:loginuicolors/firebase_options.dart';
 import 'package:loginuicolors/pages/EditEnquiryBySubAdmin.dart';
 import 'package:loginuicolors/pages/HomePage.dart';
 import 'package:loginuicolors/pages/login.dart';
@@ -12,8 +14,13 @@ getAllStates() async {
   GaragesService.getAllStates();
 }
 
-void main() {
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   getAllStates();
 
   Future<Widget> verifyToken() async {
@@ -38,6 +45,7 @@ void main() {
   }
 
   runApp(MaterialApp(
+    navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
     home: FutureBuilder<Widget>(
       future: verifyToken(),
@@ -63,4 +71,25 @@ void main() {
       // 'location':(context) => Location(),
     },
   ));
+}
+
+Future<Widget> verifyToken() async {
+  var decoded = await GaragesService.verifyAuthToken();
+
+  if (decoded == false) {
+    log('creating login page');
+    return MyLogin();
+  }
+
+  if (decoded['success']) {
+    if (decoded['garage']) {
+      log("creating home page");
+      return const HomePage();
+    } else {
+      log('creating admin home');
+      return SubAdminHome();
+    }
+  }
+
+  return MyLogin();
 }

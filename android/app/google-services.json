@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "719456424143",
+    "project_id": "superaxle-50faa",
+    "storage_bucket": "superaxle-50faa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719456424143:android:787a26a06d9811473f67ba",
+        "android_client_info": {
+          "package_name": "com.superaxle.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBndhYodZIOicpEHuE7RGjVWfuKnaVA3Oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

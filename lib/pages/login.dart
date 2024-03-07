@@ -13,7 +13,7 @@ class MyLogin extends HookWidget {
     final isLogin = useState(false);
 
     Future<void> login(BuildContext context) async {
-      await GaragesService.signIn(
+      await GaragesService().signIn(
               context, mobNumberController.text, passwordController.text)
           .then((value) => {
                 isLogin.value = false,
@@ -30,7 +30,7 @@ class MyLogin extends HookWidget {
               Container(
                 padding: EdgeInsets.only(left: 35, top: 130),
                 child: Text(
-                  'Welcome\nBack',
+                  'Welcome\nGarage',
                   style: TextStyle(color: Colors.white, fontSize: 33),
                 ),
               ),
@@ -153,7 +153,7 @@ class MyLogin extends HookWidget {
                                 children: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pushReplacementNamed(
+                                      Navigator.pushNamed(
                                           context, 'register');
                                     },
                                     child: Text(

@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/category.dart';
 import 'package:loginuicolors/models/companies.dart';
@@ -16,8 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class GaragesService {
   static const String _baseUrl = '${Globals.restApiUrl}/garages/api';
+  static final _firebaseMessaging = FirebaseMessaging.instance;
 
-  static Future<void> signUp(
+  Future<void> signUp(
       File imageFile,
       String garageName,
       String state,
@@ -28,49 +31,69 @@ class GaragesService {
       String lng,
       String password,
       BuildContext context) async {
-    Uri responseUri = Uri.parse('$_baseUrl/create');
-    var stream =
-        // ignore: deprecated_member_use
-        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-    var length = await imageFile.length();
-    var request = new http.MultipartRequest("POST", responseUri);
-    var multipartFile = new http.MultipartFile('profileImages', stream, length,
-        filename: basename(imageFile.path));
-    final data = {
-      "garage_name": garageName,
-      "state": state,
-      "city": city,
-      "address": address,
-      "mobile_number": mobileNumber,
-      "lat": lat,
-      "lng": lng,
-      "password": password
-    };
-    request.fields.addAll(data);
-    request.files.add(multipartFile);
-    // send
-    var response = await request.send();
-    // listen for response
-    response.stream.transform(utf8.decoder).listen((value) async {
-      log(value);
-      var decoded = jsonDecode(value);
-      Globals.garageId = decoded["data"]['garage']['id'];
-      Globals.garageName = decoded["data"]['garage']['garage_name'];
-      var add = decoded["data"]['garage']['address'];
-      var state = decoded["data"]['garage']['state'];
-      var city = decoded['data']['garage']['city'];
-      Globals.garageAddress = '$add,$city,$state';
-      final prefs = await SharedPreferences.getInstance();
-      String imageUrl = decoded["data"]["garage"]["url"];
-      String modifiedUrl = imageUrl.replaceAll(RegExp(r'.*?/img'), '/img');
-      await prefs.setString('url', modifiedUrl);
-      await prefs.setString('authToken', decoded['data']['token']);
-      await prefs.setString('number', mobileNumber);
-      Navigator.pushReplacementNamed(context, 'Home');
-    });
+    try {
+      Uri responseUri = Uri.parse('$_baseUrl/create');
+      var stream =
+          http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+      var length = await imageFile.length();
+      var request = new http.MultipartRequest("POST", responseUri);
+      var multipartFile = new http.MultipartFile(
+          'profileImages', stream, length,
+          filename: basename(imageFile.path));
+      request.fields.addAll({
+        "garage_name": garageName,
+        "state": state,
+        "city": city,
+        "address": address,
+        "mobile_number": mobileNumber,
+        "lat": lat,
+        "lng": lng,
+        "password": password
+      });
+      request.files.add(multipartFile);
+      // send
+      var response = await request.send();
+      // check the response
+      if (response.statusCode == 200) {
+        // Parse the response
+        var responseData = await response.stream.bytesToString();
+        var decodedData = jsonDecode(responseData);
+
+        // Handle successful response
+        Globals.garageId = decodedData["data"]['garage']['id'];
+        Globals.garageName = decodedData["data"]['garage']['garage_name'];
+        var add = decodedData["data"]['garage']['address'];
+        var state = decodedData["data"]['garage']['state'];
+        var city = decodedData['data']['garage']['city'];
+        Globals.garageAddress = '$add,$city,$state';
+        // Save data in SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        String imageUrl = decodedData["data"]["garage"]["url"];
+        String modifiedUrl = imageUrl.replaceAll(RegExp(r'.*?/img'), '/img');
+        await prefs.setString('url', modifiedUrl);
+        await prefs.setString('authToken', decodedData['data']['token']);
+        await prefs.setString('number', mobileNumber);
+
+        // Get fcm token and call api
+        final token = await _firebaseMessaging.getToken();
+        log("$token", name: "Garage Device Token");
+        String id = "${Globals.garageId}";
+        garageFCMToken(context, id, token!);
+
+        // Navigate to Home screen
+        Navigator.pushReplacementNamed(context, 'Home');
+      } else {
+        // Handle error response
+        throw ('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle exceptions
+      log('Error during sign up: $e');
+      throw e;
+    }
   }
 
-  static Future<void> signIn(
+  Future<void> signIn(
       BuildContext context, String mobileNumber, String password) async {
     try {
       ApiServices apiServices = ApiServices(http.Client());
@@ -84,11 +107,10 @@ class GaragesService {
         },
       );
       var decoded = result;
-      log(decoded.toString(), name: "Garage login response: ");
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(decoded["message"])));
-      if (decoded["success"]) {
+      if (decoded["success"] == true) {
+        log(decoded.toString(), name: "Garage login response: ");
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        //save data in variables
         Globals.garageId = decoded["data"]['garage']['id'];
         Globals.garageName = decoded["data"]['garage']['garage_name'];
         var add = decoded["data"]['garage']['address'];
@@ -102,7 +124,19 @@ class GaragesService {
         await prefs.setString('number', mobileNumber);
         await prefs.setString('url', modifiedUrl); // Use the modified URL here
         await prefs.setBool('garage', true);
+
+        // save device fcm Token of garage and call api
+        final token = await _firebaseMessaging.getToken();
+        log("$token", name: "Garage Device Token");
+        String id = "${Globals.garageId}";
+        garageFCMToken(context, id, token!);
+
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(decoded["message"])));
         Navigator.pushReplacementNamed(context, 'Home');
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(decoded["message"])));
       }
     } catch (e) {
       debugPrint("error: ${e.toString()}");
@@ -176,27 +210,83 @@ class GaragesService {
     return result;
   }
 
-  static void loginSubAdmin(
+  Future<void> loginSubAdmin(
       BuildContext context, String mobileNumber, String password) async {
-    Uri responseUri = Uri.parse("$_baseUrl/loginSubAdmin");
-    http.Response response = await http.post(responseUri,
-        body: {"mobile_number": mobileNumber, "password": password});
-    var decoded = jsonDecode(response.body);
-    log(decoded.toString());
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(decoded["message"])));
-    if (decoded["success"]) {
-      Globals.subAdminId = decoded["data"]['SubAdmin']['id'];
-      Globals.subAdminMobileNumber =
-          decoded["data"]['SubAdmin']['mobile_number'];
-      Globals.subAdminName = decoded["data"]['SubAdmin']['name'];
-      Globals.subAdminState = decoded["data"]['SubAdmin']['state'];
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('authToken', decoded['data']['token']);
-      await prefs.setString('number', mobileNumber);
-      await prefs.setBool('garage', false);
-      Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
+    try {
+      Uri responseUri = Uri.parse("$_baseUrl/loginSubAdmin");
+      http.Response response = await http.post(responseUri,
+          body: {"mobile_number": mobileNumber, "password": password});
+      var decoded = jsonDecode(response.body);
+      if (decoded["success"] == true) {
+        log(decoded.toString());
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        //save data in varables
+        Globals.subAdminId = decoded["data"]['SubAdmin']['id'];
+        Globals.subAdminMobileNumber =
+            decoded["data"]['SubAdmin']['mobile_number'];
+        Globals.subAdminName = decoded["data"]['SubAdmin']['name'];
+        Globals.subAdminState = decoded["data"]['SubAdmin']['state'];
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('authToken', decoded['data']['token']);
+        await prefs.setString('number', mobileNumber);
+        await prefs.setBool('garage', false);
+        // Get the user fcm Token and call the api
+        final adtoken = await _firebaseMessaging.getToken();
+        String id = "${Globals.subAdminId}";
+        subAdminFCMToken(context, id, adtoken!);
+        log("${adtoken}", name: "Sub Admin Device Token"); //print fcm token
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(decoded["message"])));
+        Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
+    }
+  }
+
+  Future<void> subAdminFCMToken(context, String id, String fcmToken) async {
+    try {
+      final response = await http.post(
+          Uri.parse("http://139.59.77.55:3000/subadmins/api/updateFCMToken"),
+          body: {
+            'id': id,
+            'fcmToken': fcmToken,
+          });
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        log("SubAdmin FCM api: $jsonResponse");
+        if (jsonResponse["success"] == true) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("FCM Token Update")));
+        } else {
+          log("fjlksdjfksdjfl", name: 'fcm false');
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
+    }
+  }
+
+  Future<void> garageFCMToken(context, String id, String fcmToken) async {
+    try {
+      final response = await http.post(
+          Uri.parse("http://139.59.77.55:3000/garages/api/updateFCMToken"),
+          body: {
+            'id': id,
+            'fcmToken': fcmToken,
+          });
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        log("Garage FCM api: $jsonResponse");
+        if (jsonResponse["success"] == true) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("FCM Token Update")));
+        } else {
+          log("fjlksdjfksdjfl", name: 'fcm false');
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
     }
   }
 

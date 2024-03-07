@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -6,9 +7,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:loginuicolors/models/cars.dart';
 import 'package:loginuicolors/models/companies.dart';
 import 'package:loginuicolors/services/enquiryService.dart';
+import 'package:loginuicolors/services/firebase_messaging.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
+import 'package:http/http.dart' as http;
 
 class NewEnquiries extends StatefulWidget {
   const NewEnquiries({super.key});
@@ -44,15 +47,35 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   late Position position;
 
   ScrollController _scrollController = ScrollController();
+  PushNotifications pushNotification = PushNotifications();
 
   void submitEnquiry(BuildContext context) async {
-    EnquiryService.createEnquiry(files, address, lat.toString(), long.toString(), _selectedCompany.toString(),
-        _selectedCarName.toString(), _selectedAxel.toString(), priceOfEnquiry, context);
+    // create an instance of pushNotification Class
+    // send Enquiry on Back-end
+    EnquiryService.createEnquiry(
+        files,
+        address,
+        lat.toString(),
+        long.toString(),
+        _selectedCompany.toString(),
+        _selectedCarName.toString(),
+        _selectedAxel.toString(),
+        priceOfEnquiry,
+        context);
+
+    // send notification to SubAdmin
+    await PushNotifications.showSimpleNotification(
+      id: Globals.subAdminId,
+      fcmToken: Globals.subAdminDeviceToken,
+      title: "New Enquiry Created",
+      body: Globals.garageName,
+      payload: _selectedCarName.toString());
   }
 
   pickFiles() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: true);
+      FilePickerResult? result =
+          await FilePicker.platform.pickFiles(allowMultiple: true);
 
       if (result != null) {
         files = result.paths.map((path) => File(path.toString())).toList();
@@ -99,7 +122,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   }
 
   Future<void> getLocation() async {
-    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     debugPrint(position.longitude.toString());
     debugPrint(position.latitude.toString());
 
@@ -162,14 +186,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       value: _selectedCompany,
                       items: [
                         for (Companies company in Globals.allCompanies)
-                          DropdownMenuItem(value: company.company, child: Text("${company.company}"))
+                          DropdownMenuItem(
+                              value: company.company,
+                              child: Text("${company.company}"))
                       ],
                       hint: const Text('Select an option'),
                       onChanged: (value) async {
                         setState(() {
                           companySelected = false;
                         });
-                        List<Cars> cars = await GaragesService.getAllCars(value.toString());
+                        List<Cars> cars =
+                            await GaragesService.getAllCars(value.toString());
                         setState(() {
                           Globals.allCars = [];
                           _selectedCompany = value.toString();
@@ -198,15 +225,20 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         value: _selectedCar,
                         items: [
                           for (Cars car in Globals.allCars)
-                            DropdownMenuItem(value: car.id, child: Text("${car.carName}"))
+                            DropdownMenuItem(
+                                value: car.id, child: Text("${car.carName}"))
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
-                          _selectedCarName = Globals.allCars.firstWhere((element) => element.id == value).carName;
-                          var response = await GaragesService.getPrices(int.parse(value.toString()), Globals.garageId);
+                          _selectedCarName = Globals.allCars
+                              .firstWhere((element) => element.id == value)
+                              .carName;
+                          var response = await GaragesService.getPrices(
+                              int.parse(value.toString()), Globals.garageId);
 
                           if (response.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('No Prices Found')));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('No Prices Found')));
                             return;
                           }
                           left = response[0];
@@ -233,7 +265,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         ),
                         items: const [
                           DropdownMenuItem(value: 'Left', child: Text('Left')),
-                          DropdownMenuItem(value: 'Right', child: Text('Right')),
+                          DropdownMenuItem(
+                              value: 'Right', child: Text('Right')),
                           DropdownMenuItem(value: 'Both', child: Text('Both'))
                         ],
                         hint: const Text('Select an option'),
@@ -303,7 +336,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         Column(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () => pickFiles(),
                                 child: const Text('AddImages'),
@@ -328,9 +362,11 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                     padding: const EdgeInsets.only(top: 10.0),
                                     height: 300,
                                     child: Scrollbar(
-                                      thumbVisibility: true, //always show scrollbar
+                                      thumbVisibility:
+                                          true, //always show scrollbar
                                       thickness: 4, //width of scrollbar
-                                      radius: Radius.circular(20), //corner radius of scrollbar
+                                      radius: Radius.circular(
+                                          20), //corner radius of scrollbar
                                       controller: _scrollController,
                                       child: SingleChildScrollView(
                                         controller: _scrollController,
@@ -340,9 +376,13 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                               Container(
                                                 margin: EdgeInsets.all(10),
                                                 height: 150,
-                                                width: MediaQuery.of(context).size.width * 0.8,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.8,
                                                 child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   child: Image.file(
                                                     image,
                                                     fit: BoxFit.cover,
@@ -355,7 +395,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                     ),
                                   ),
                             Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
                               child: loadLocation
                                   ? CircularProgressIndicator.adaptive()
                                   : ElevatedButton(
@@ -388,7 +429,31 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
-                          onPressed: () => submitEnquiry(context),
+                          onPressed: () {
+                            submitEnquiry(context);
+                            pushNotification
+                                .getDeviceToken()
+                                .then((value) async {
+                              var data = {
+                                'to': value,
+                                'priority': 'high',
+                                'notification': {
+                                  'title': 'New Enquiry',
+                                  'body': '${Globals.garageName}',
+                                },
+                              };
+                              await http.post(
+                                  Uri.parse(
+                                      'https://fcm.googleapis.com/fcm/send'),
+                                  body: jsonEncode(data),
+                                  headers: {
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                    'Authorization':
+                                        'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
+                                  });
+                            });
+                          },
                           child: const Text('Submit'),
                         ),
                       ),

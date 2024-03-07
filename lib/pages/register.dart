@@ -44,7 +44,7 @@ class _MyRegisterState extends State<MyRegister> {
   String address = '';
 
   signUp(BuildContext context) async {
-    await GaragesService.signUp(
+    await GaragesService().signUp(
         _image,
         _garageName.text,
         dropDownValue.toString(),
@@ -159,10 +159,10 @@ class _MyRegisterState extends State<MyRegister> {
       String? state = placemark.administrativeArea;
       String? city = placemark.locality;
 
-      log(state.toString());
-      log(city.toString());
+      print(state.toString());
+      print(city.toString());
     } catch (error) {
-      log(error.toString());
+      print(error.toString());
     }
     return position;
   }
@@ -452,7 +452,9 @@ class _MyRegisterState extends State<MyRegister> {
                                           backgroundColor: Color(0xff4c505b),
                                           child: IconButton(
                                               color: Colors.white,
-                                              onPressed: () => signUp(context),
+                                              onPressed: () {
+                                                 signUp(context);
+                                              },
                                               icon: Icon(
                                                 Icons.arrow_forward,
                                               )),

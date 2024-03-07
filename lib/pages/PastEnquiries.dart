@@ -70,14 +70,13 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                               ),
                               SizedBox(width: 16),
                               Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Company Name: ${enquiry.company}',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 239, 239, 239),
+                                        color:
+                                            Color.fromARGB(255, 239, 239, 239),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14),
                                   ),
@@ -85,8 +84,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   Text(
                                     'Enquiry Number: ${enquiry.id}',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 175, 175, 175),
+                                        color:
+                                            Color.fromARGB(255, 175, 175, 175),
                                         fontSize: 14),
                                   ),
                                   SizedBox(
@@ -99,8 +98,6 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                     //             .width *
                                     //         0.5),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           enquiry.carName,
@@ -110,7 +107,6 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20),
                                         ),
-                                        // SizedBox(width:100 ,),
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(
@@ -118,8 +114,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                                   color: Color.fromARGB(
                                                       255, 215, 0, 0)),
                                               borderRadius:
-                                                  BorderRadius.circular(
-                                                      10)),
+                                                  BorderRadius.circular(10)),
                                           child: Text(
                                             enquiry.status.toUpperCase(),
                                             style: TextStyle(
@@ -134,8 +129,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   Text(
                                     'Axel: ${enquiry.axel}',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 214, 214, 214),
+                                        color:
+                                            Color.fromARGB(255, 214, 214, 214),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ), // add more space between the second and third text
@@ -143,8 +138,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   Text(
                                     'Offered Price: ${enquiry.offeredPrice}',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 214, 214, 214),
+                                        color:
+                                            Color.fromARGB(255, 214, 214, 214),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ), // add more space between the second and third text
@@ -152,8 +147,8 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   Text(
                                     'Address:',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 214, 214, 214),
+                                        color:
+                                            Color.fromARGB(255, 214, 214, 214),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ),
