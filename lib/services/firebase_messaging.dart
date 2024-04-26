@@ -7,9 +7,8 @@ class PushNotifications {
   static final _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
 // userToken
- Future<String>getDeviceToken() async {
+  Future<String> getDeviceToken() async {
     final token = await _firebaseMessaging.getToken();
     return token!;
   }
@@ -79,8 +78,4 @@ class PushNotifications {
     await _localNotificationsPlugin.show(id, title, body, notificationDetails,
         payload: payload);
   }
-
-
-
-
 }
