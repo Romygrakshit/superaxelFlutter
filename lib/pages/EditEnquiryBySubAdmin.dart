@@ -53,7 +53,8 @@ class EditEnqSubAdmin extends HookWidget {
       status.value = enqury.status;
       return null;
     }, []);
-
+    // Data Shows on textfield using controller...
+    _newOfferedPrice.text = enqury.offeredPrice;
     return SafeArea(
       child: Scaffold(
         body: Form(
@@ -74,7 +75,8 @@ class EditEnqSubAdmin extends HookWidget {
                     height: 20,
                   ),
                   TextFormField(
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
+                    maxLines: 2,
                     controller: _newOfferedPrice,
                     validator: (value) {
                       if (value == null) {

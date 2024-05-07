@@ -33,10 +33,10 @@ class EnquiryService {
   }
 
   static void createEnquiry(
-      List<File> _image,
-      String address,
-      String lat,
-      String lng,
+      List<File>? _image,
+      String? address,
+      String? lat,
+      String? lng,
       String company,
       String carName,
       String axel,
@@ -48,9 +48,9 @@ class EnquiryService {
     // request.headers['Content-Type'] = "multipart/form-data";
 
     request.fields['garage_id'] = Globals.garageId.toString();
-    request.fields['address'] = address;
-    request.fields['lat'] = lat;
-    request.fields['lng'] = lng;
+    request.fields['address'] = address!;
+    request.fields['lat'] = lat!;
+    request.fields['lng'] = lng!;
     // request.fields['state'] = "Rajasthan";
     request.fields['company'] = company;
     request.fields['car_name'] = carName;
@@ -60,7 +60,7 @@ class EnquiryService {
     log(request.fields.toString(), name: "enquiry request data:");
     // print('enquiry request data: ${request.fields.toString()}');
 
-    for (var i = 0; i < _image.length; i++) {
+    for (var i = 0; i < _image!.length; i++) {
       String extension = _image[i].path.split('.').last.toLowerCase();
       if (extension == 'jpg' || extension == 'jpeg' || extension == 'png') {
         request.files.add(http.MultipartFile(

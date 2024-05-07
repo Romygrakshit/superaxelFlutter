@@ -26,11 +26,11 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   int? _selectedCar;
   String? _selectedCarName;
   String? _selectedAxel;
-  List<File> files = [];
+  List<File>? files = [];
   bool isLocation = false;
-  double lat = 0;
-  double long = 0;
-  String address = '';
+  double? lat = 0;
+  double? long = 0;
+  String? address = '';
   bool companySelected = false;
   bool carSelected = false;
   bool axelSelected = false;
@@ -51,25 +51,44 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
   void submitEnquiry(BuildContext context) async {
     // create an instance of pushNotification Class
-    // send Enquiry on Back-end
-    EnquiryService.createEnquiry(
-        files,
-        address,
-        lat.toString(),
-        long.toString(),
-        _selectedCompany.toString(),
-        _selectedCarName.toString(),
-        _selectedAxel.toString(),
-        priceOfEnquiry,
-        context);
+    if (files!.isNotEmpty || address!.isNotEmpty) {
+      // send Enquiry on Back-end
+      EnquiryService.createEnquiry(
+          files,
+          address!,
+          lat.toString(),
+          long.toString(),
+          _selectedCompany.toString(),
+          _selectedCarName.toString(),
+          _selectedAxel.toString(),
+          priceOfEnquiry,
+          context);
 
-    // send notification to SubAdmin
-    await PushNotifications.showSimpleNotification(
-      id: Globals.subAdminId,
-      fcmToken: Globals.subAdminDeviceToken,
-      title: "New Enquiry Created",
-      body: Globals.garageName,
-      payload: _selectedCarName.toString());
+      // send notification to SubAdmin
+      await PushNotifications.showSimpleNotification(
+          id: Globals.subAdminId,
+          fcmToken: Globals.subAdminDeviceToken,
+          title: "New Enquiry Created",
+          body: Globals.garageName,
+          payload: _selectedCarName.toString());
+    } else {
+      EnquiryService.createEnquiry(
+          null,
+          null,
+          null,
+          null,
+          _selectedCompany.toString(),
+          _selectedCarName.toString(),
+          _selectedAxel.toString(),
+          priceOfEnquiry,
+          context);
+      await PushNotifications.showSimpleNotification(
+          id: Globals.subAdminId,
+          fcmToken: Globals.subAdminDeviceToken,
+          title: "New Enquiry Created",
+          body: Globals.garageName,
+          payload: _selectedCarName.toString());
+    }
   }
 
   pickFiles() async {
@@ -86,6 +105,21 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     }
   }
 
+  Future<void> getLocation() async {
+    position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.longitude.toString());
+    debugPrint(position.latitude.toString());
+
+    long = position.longitude;
+    lat = position.latitude;
+
+    setState(() {
+      //refresh UI
+      loadLocation = false;
+    });
+  }
+
   Future<void> checkGps() async {
     loadLocation = true;
     servicestatus = await Geolocator.isLocationServiceEnabled();
@@ -96,8 +130,10 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           debugPrint('Location permissions are denied');
+          haspermission = false;
         } else if (permission == LocationPermission.deniedForever) {
           debugPrint("'Location permissions are permanently denied");
+          haspermission = false;
         } else {
           haspermission = true;
         }
@@ -121,21 +157,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     });
   }
 
-  Future<void> getLocation() async {
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    debugPrint(position.longitude.toString());
-    debugPrint(position.latitude.toString());
-
-    long = position.longitude;
-    lat = position.latitude;
-
-    setState(() {
-      //refresh UI
-      loadLocation = false;
-    });
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -148,7 +169,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         ? Scaffold(
             body: OpenStreetMapSearchAndPick(
               // center: LatLong(26.82, 75.85),
-              center: LatLong(lat, long),
+              center: LatLong(lat!, long!),
               onPicked: (pickedData) {
                 debugPrint("${pickedData.toString()}");
                 setState(() {
@@ -343,7 +364,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 child: const Text('AddImages'),
                               ),
                             ),
-                            Text('${files.length} images selected'),
+                            Text('${files!.length} images selected'),
                             SizedBox(
                               height: 20,
                             ),
@@ -356,7 +377,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 maxLines: 2,
                               ),
                             ),
-                            files.isEmpty
+                            files!.isEmpty
                                 ? const SizedBox.shrink()
                                 : Container(
                                     padding: const EdgeInsets.only(top: 10.0),
@@ -372,7 +393,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                         controller: _scrollController,
                                         child: Column(
                                           children: [
-                                            for (var image in files)
+                                            for (var image in files!)
                                               Container(
                                                 margin: EdgeInsets.all(10),
                                                 height: 150,
@@ -416,7 +437,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
                                     // color: Colors.blue,
                                     fontSize: 16),
-                                address,
+                                address!,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),

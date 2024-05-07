@@ -40,6 +40,7 @@ dependencies:
   firebase_core: ^2.25.4
   firebase_messaging: ^14.7.15
   flutter_local_notifications: ^16.3.2
+  overlay_support: ^2.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

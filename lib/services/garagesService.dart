@@ -232,6 +232,7 @@ class GaragesService {
         await prefs.setBool('garage', false);
         // Get the user fcm Token and call the api
         final adtoken = await _firebaseMessaging.getToken();
+        log("fcm token subadmin $adtoken");
         String id = "${Globals.subAdminId}";
         subAdminFCMToken(context, id, adtoken!);
         log("${adtoken}", name: "Sub Admin Device Token"); //print fcm token
@@ -258,12 +259,13 @@ class GaragesService {
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         log("SubAdmin FCM api: $jsonResponse");
-        if (jsonResponse["success"] == true) {
+        /*  if (jsonResponse["success"] == true) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text("FCM Token Update")));
         } else {
           log("fjlksdjfksdjfl", name: 'fcm false');
         }
+        */
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));
