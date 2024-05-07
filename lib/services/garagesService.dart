@@ -238,6 +238,9 @@ class GaragesService {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(decoded["message"])));
         Navigator.pushReplacementNamed(context, 'HomeSubAdmin');
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(decoded["message"])));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("$e")));

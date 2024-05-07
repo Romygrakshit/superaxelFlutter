@@ -17,8 +17,8 @@ class EnquiryService {
     try {
       Uri responseUri = Uri.parse("$_baseUrl/list/$garageId");
       http.Response response = await http.get(responseUri);
-      Map decoded = jsonDecode(response.body);
-      print(decoded.toString());
+      final decoded = jsonDecode(response.body);
+      log(decoded.toString(), name: "api response");
       var enquiries = decoded["data"];
       dedcodedEnq = [];
       for (var enq in enquiries) {
@@ -91,9 +91,10 @@ class EnquiryService {
                   margin: EdgeInsets.symmetric(horizontal: 50),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white54,
+                    color: Colors.white,
                   ),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         "Enquiry Created",
@@ -143,7 +144,9 @@ class EnquiryService {
                 children: [
                   Text(
                     "$e",
-                    style: TextStyle(fontSize: 14,),
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
                   ),
                   TextButton(
                       onPressed: () {

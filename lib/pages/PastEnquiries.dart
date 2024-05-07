@@ -21,7 +21,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
         await EnquiryService.pastEnquiryList(Globals.garageId);
     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
-    // log(enquiries.toString());
+    log(enquiries.toString(),name: "enquiry list");
     first = false;
     setState(() {});
   }
@@ -43,11 +43,10 @@ class _PastEnquiriesState extends State<PastEnquiries> {
             : ListView.builder(
                 itemCount: enquiries.length,
                 itemBuilder: (context, index) {
-                  PastEnquiry enquiry = enquiries[index];
 
                   final imageUrl =
-                      enquiry.imageUrl.replaceAll('/..', Globals.restApiUrl);
-                  log("$imageUrl");
+                      enquiries[index].imageUrl.replaceAll('/..', Globals.restApiUrl);
+                  log("$imageUrl",name: "image eror");
                   return Container(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(22),
@@ -73,7 +72,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Company Name: ${enquiry.company}',
+                                    'Company Name: ${enquiries[index].company}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 239, 239, 239),
@@ -82,7 +81,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Enquiry Number: ${enquiry.id}',
+                                    'Enquiry Number: ${enquiries[index].id}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 175, 175, 175),
@@ -100,7 +99,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                     child: Row(
                                       children: [
                                         Text(
-                                          enquiry.carName,
+                                          enquiries[index].carName,
                                           style: TextStyle(
                                               color: Color.fromARGB(
                                                   255, 239, 239, 239),
@@ -116,7 +115,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                               borderRadius:
                                                   BorderRadius.circular(10)),
                                           child: Text(
-                                            enquiry.status.toUpperCase(),
+                                             enquiries[index].status.toUpperCase(),
                                             style: TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 215, 0, 0)),
@@ -127,7 +126,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Axel: ${enquiry.axel}',
+                                    'Axel: ${ enquiries[index].axel}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 214, 214, 214),
@@ -136,7 +135,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                   ), // add more space between the second and third text
                                   SizedBox(height: 4),
                                   Text(
-                                    'Offered Price: ${enquiry.offeredPrice}',
+                                    'Offered Price: ${ enquiries[index].offeredPrice}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 214, 214, 214),
@@ -160,7 +159,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                               255, 239, 239, 239),
                                           // color: Colors.blue,
                                           fontSize: 16),
-                                      enquiry.address,
+                                      enquiries[index].address,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
