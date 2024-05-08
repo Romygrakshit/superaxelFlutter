@@ -110,6 +110,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                           return "Enter the value";
                       },
                       controller: leftPrice,
+                      enabled: false,
                       decoration: InputDecoration(
                           labelText: 'Left Axel Price',
                           border: OutlineInputBorder()),
@@ -126,6 +127,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                           return "Enter the value";
                       },
                       controller: leftInventory,
+                      enabled: false,
                       decoration: InputDecoration(
                           labelText: 'Left Axel Inventory',
                           border: OutlineInputBorder()),
@@ -142,6 +144,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                           return "Enter the value";
                       },
                       controller: rightprice,
+                      enabled: false,
                       decoration: InputDecoration(
                           labelText: 'Right Axel Price',
                           border: OutlineInputBorder()),
@@ -151,6 +154,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                     ),
                     TextFormField(
                       keyboardType: TextInputType.number,
+                      enabled: false,
                       validator: (value) {
                         if (value!.length > 1)
                           return null;

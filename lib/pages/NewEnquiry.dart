@@ -163,6 +163,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     super.dispose();
   }
 
+  // Fields are mandatory....
+  String? get _errorText {
+    final car = _selectedCar.toString();
+    final company = _selectedCompany.toString();
+    final axel = _selectedAxel.toString();
+    if (car.isEmpty || company.isEmpty || axel.isEmpty) {
+      return 'Can\'t be empty';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return isLocation
@@ -203,6 +214,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         labelText: 'Select Company',
+                        errorText: _errorText,
                       ),
                       value: _selectedCompany,
                       items: [
@@ -242,6 +254,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Select Car',
+                          errorText: _errorText,
                         ),
                         value: _selectedCar,
                         items: [
@@ -283,6 +296,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Select Axel (left/right)',
+                          errorText: _errorText,
                         ),
                         items: const [
                           DropdownMenuItem(value: 'Left', child: Text('Left')),
@@ -451,29 +465,35 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            submitEnquiry(context);
-                            pushNotification
-                                .getDeviceToken()
-                                .then((value) async {
-                              var data = {
-                                'to': value,
-                                'priority': 'high',
-                                'notification': {
-                                  'title': 'New Enquiry',
-                                  'body': '${Globals.garageName}',
-                                },
-                              };
-                              await http.post(
-                                  Uri.parse(
-                                      'https://fcm.googleapis.com/fcm/send'),
-                                  body: jsonEncode(data),
-                                  headers: {
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                    'Authorization':
-                                        'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
-                                  });
-                            });
+                            if (_selectedCar.toString().isNotEmpty &&
+                                _selectedAxel.toString().isNotEmpty &&
+                                _selectedCompany.toString().isNotEmpty) {
+                              submitEnquiry(context);
+                              pushNotification
+                                  .getDeviceToken()
+                                  .then((value) async {
+                                var data = {
+                                  'to': value,
+                                  'priority': 'high',
+                                  'notification': {
+                                    'title': 'New Enquiry',
+                                    'body': '${Globals.garageName}',
+                                  },
+                                };
+                                await http.post(
+                                    Uri.parse(
+                                        'https://fcm.googleapis.com/fcm/send'),
+                                    body: jsonEncode(data),
+                                    headers: {
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                      'Authorization':
+                                          'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
+                                    });
+                              });
+                            } else {
+                              return null;
+                            }
                           },
                           child: const Text('Submit'),
                         ),
