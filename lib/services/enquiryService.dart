@@ -103,7 +103,8 @@ class EnquiryService {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, 'Home');
+                            // Navigator.pushReplacementNamed(context, 'Home');
+                            Navigator.pop(context);
                           },
                           child: Text(
                             "Ok",

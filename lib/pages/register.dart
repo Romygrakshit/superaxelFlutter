@@ -20,7 +20,7 @@ class MyRegister extends StatefulWidget {
 class _MyRegisterState extends State<MyRegister> {
   TextEditingController _garageName = TextEditingController();
   TextEditingController _mobNumber = TextEditingController();
-  TextEditingController _city = TextEditingController();
+  // TextEditingController _city = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _address = TextEditingController();
   final _signUpKey = GlobalKey<FormState>();
@@ -32,6 +32,7 @@ class _MyRegisterState extends State<MyRegister> {
   bool imageloaded = false;
   bool location = false;
   String? dropDownValue;
+  String? _city;
   bool isLocation = false;
 
   // locator
@@ -48,7 +49,7 @@ class _MyRegisterState extends State<MyRegister> {
         _image,
         _garageName.text,
         dropDownValue.toString(),
-        _city.text,
+        _city.toString(),
         _address.text,
         _mobNumber.text,
         lat.toString(),
@@ -332,21 +333,6 @@ class _MyRegisterState extends State<MyRegister> {
                                     SizedBox(
                                       height: 30,
                                     ),
-                                    TextFormField(
-                                      controller: _city,
-                                      style: TextStyle(color: Colors.black),
-                                      decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "City",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
                                     DropdownButtonFormField(
                                       items: [
                                         for (StateDecode state
@@ -363,8 +349,42 @@ class _MyRegisterState extends State<MyRegister> {
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                           )),
-                                      onChanged: (value) {
+                                      onChanged: (value) async {
+                                        int index = Globals.allStates
+                                            .indexWhere((state) =>
+                                                state.state == value);
+                                        print(index + 1);
+                                        // code to get city list by using state index
+
                                         dropDownValue = value.toString();
+                                        List<String> cities =
+                                            await GaragesService()
+                                                .getAllCities(index + 1);
+                                        setState(() {
+                                          Globals.allCity = cities;
+                                        });
+                                        // updateCityDropdown();
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    DropdownButtonFormField(
+                                      items: [
+                                        for (String city in Globals.allCity)
+                                          DropdownMenuItem(
+                                              value: city, child: Text(city))
+                                      ],
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.grey.shade100,
+                                          filled: true,
+                                          hintText: "City",
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          )),
+                                      onChanged: (value) {
+                                        _city = value.toString();
                                       },
                                     ),
                                     SizedBox(
@@ -453,7 +473,7 @@ class _MyRegisterState extends State<MyRegister> {
                                           child: IconButton(
                                               color: Colors.white,
                                               onPressed: () {
-                                                 signUp(context);
+                                                signUp(context);
                                               },
                                               icon: Icon(
                                                 Icons.arrow_forward,

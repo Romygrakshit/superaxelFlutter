@@ -7,6 +7,7 @@ class Globals {
   static const restApiUrl = "http://139.59.77.55:3000";
   // static const restApiUrl = "https://superaxlecompany.in";
   static List<StateDecode> allStates = [];
+  static List<dynamic> allCity = [];
   static String garageName = '';
   static String garageAddress = '';
   static int garageId = 0;

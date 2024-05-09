@@ -14,10 +14,10 @@ class EditEnqSubAdmin extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _newOfferedPrice = useTextEditingController();
     final _scrollController = useScrollController();
 
     Enquiry enqury = ModalRoute.of(context)!.settings.arguments as Enquiry;
+    final _newOfferedPrice = TextEditingController(text: enqury.offeredPrice);
     final status = useState('');
 
     Future<void> updateEnquiry(BuildContext context, Enquiry enq) async {

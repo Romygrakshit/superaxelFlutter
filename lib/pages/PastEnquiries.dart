@@ -21,7 +21,7 @@ class _PastEnquiriesState extends State<PastEnquiries> {
         await EnquiryService.pastEnquiryList(Globals.garageId);
     newEnquiries = new List.from(newEnquiries.reversed);
     enquiries.addAll(newEnquiries);
-    log(enquiries.toString(),name: "enquiry list");
+    log(enquiries.toString(), name: "enquiry list");
     first = false;
     setState(() {});
   }
@@ -43,17 +43,17 @@ class _PastEnquiriesState extends State<PastEnquiries> {
             : ListView.builder(
                 itemCount: enquiries.length,
                 itemBuilder: (context, index) {
-
-                  final imageUrl =
-                      enquiries[index].imageUrl.replaceAll('/..', Globals.restApiUrl);
-                  log("$imageUrl",name: "image eror");
-                  return Container(
+                  final imageUrl = enquiries[index]
+                      .imageUrl
+                      .replaceAll('/..', Globals.restApiUrl);
+                  log("$imageUrl", name: "image eror");
+                  return SizedBox(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(20),
                       child: Card(
                         color: Color.fromARGB(255, 10, 10, 10),
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(10.0),
                           child: Row(
                             children: [
                               Container(
@@ -87,55 +87,48 @@ class _PastEnquiriesState extends State<PastEnquiries> {
                                             Color.fromARGB(255, 175, 175, 175),
                                         fontSize: 14),
                                   ),
-                                  SizedBox(
-                                      height:
-                                          4), // add space between the first and second text
-                                  Container(
-                                    // constraints: BoxConstraints(
-                                    //     maxWidth: MediaQuery.of(context)
-                                    //             .size
-                                    //             .width *
-                                    //         0.5),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          enquiries[index].carName,
-                                          style: TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 239, 239, 239),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Color.fromARGB(
-                                                      255, 215, 0, 0)),
-                                              borderRadius:
-                                                  BorderRadius.circular(10)),
-                                          child: Text(
-                                             enquiries[index].status.toUpperCase(),
-                                            style: TextStyle(
+                                  SizedBox(height: 4),
+                                  Text(
+                                    enquiries[index].carName,
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 239, 239, 239),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Axel: ${enquiries[index].axel}',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 214, 214, 214),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      Container(
+                                        margin: EdgeInsets.only(left: 25),
+                                        padding: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
                                                 color: Color.fromARGB(
                                                     255, 215, 0, 0)),
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Text(
+                                          enquiries[index].status.toUpperCase(),
+                                          style: TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 215, 0, 0)),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    'Axel: ${ enquiries[index].axel}',
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 214, 214, 214),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ), // add more space between the second and third text
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Offered Price: ${ enquiries[index].offeredPrice}',
+                                    'Offered Price: ${enquiries[index].offeredPrice}',
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 214, 214, 214),

@@ -174,6 +174,24 @@ class GaragesService {
     }
   }
 
+  // all cities api code
+Future<List<String>>getAllCities(int stateIndex) async {
+    Uri responseUri =
+        Uri.parse("${Globals.restApiUrl}/garages/get-cities/$stateIndex");
+    http.Response response = await http.get(responseUri);
+    var decoded = jsonDecode(response.body);
+    log(decoded.toString());
+    List<String> allCities = [];
+    if (decoded["cities"].toString().isNotEmpty) {
+      for (var state in decoded["cities"]) {
+        allCities.add(state["city"]);
+      }
+      print(allCities);
+      // Globals.allCity = allCities;
+    }
+    return allCities;
+  }
+
   static verifyAuthToken() async {
     var result;
     try {
@@ -259,8 +277,8 @@ class GaragesService {
         final jsonResponse = jsonDecode(response.body);
         log("SubAdmin FCM api: $jsonResponse");
         if (jsonResponse["success"] == true) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("FCM Token Update")));
+          // ScaffoldMessenger.of(context)
+          //     .showSnackBar(SnackBar(content: Text("FCM Token Update")));
         } else {
           log("fjlksdjfksdjfl", name: 'fcm false');
         }
@@ -282,8 +300,8 @@ class GaragesService {
         final jsonResponse = jsonDecode(response.body);
         log("Garage FCM api: $jsonResponse");
         if (jsonResponse["success"] == true) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("FCM Token Update")));
+          // ScaffoldMessenger.of(context)
+          //     .showSnackBar(SnackBar(content: Text("FCM Token Update")));
         } else {
           log("fjlksdjfksdjfl", name: 'fcm false');
         }

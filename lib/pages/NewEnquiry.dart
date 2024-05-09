@@ -65,11 +65,11 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
     // send notification to SubAdmin
     await PushNotifications.showSimpleNotification(
-      id: Globals.subAdminId,
-      fcmToken: Globals.subAdminDeviceToken,
-      title: "New Enquiry Created",
-      body: Globals.garageName,
-      payload: _selectedCarName.toString());
+        id: Globals.subAdminId,
+        fcmToken: Globals.subAdminDeviceToken,
+        title: "New Enquiry Created",
+        body: Globals.garageName,
+        payload: _selectedCarName.toString());
   }
 
   pickFiles() async {
@@ -272,14 +272,20 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         hint: const Text('Select an option'),
                         onChanged: (value) {
                           setState(() {
-                            if (value == 'Left')
-                              priceOfEnquiry = left;
-                            else if (value == 'Right')
-                              priceOfEnquiry = right;
-                            else
-                              priceOfEnquiry = '\nLeft: $left\nRight: $right';
-                            _selectedAxel = value as String?;
-                            axelSelected = true;
+                            switch (value) {
+                              case "Left":
+                                axelSelected = true;
+                                priceOfEnquiry = left;
+                                break;
+                              case "Right":
+                                axelSelected = true;
+                                priceOfEnquiry = right;
+                                break;
+                              default:
+                                axelSelected = true;
+                                priceOfEnquiry = '\nLeft: $left\nRight: $right';
+                                break;
+                            }
                           });
                         },
                       )
@@ -430,7 +436,14 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            submitEnquiry(context);
+                            if (files.isNotEmpty &&
+                                _selectedCarName.toString().isNotEmpty &&
+                                _selectedCompany.toString().isNotEmpty) {
+                              submitEnquiry(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Fill all fields")));
+                            }
                             pushNotification
                                 .getDeviceToken()
                                 .then((value) async {
