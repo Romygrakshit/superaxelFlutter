@@ -10,6 +10,7 @@ class Globals {
   static List<dynamic> allCity = [];
   static String garageName = '';
   static String garageAddress = '';
+  static String garageFcmtoken = '';
   static int garageId = 0;
   static List<Cars> allCars = [];
   static List<CategoryItems> allCategoryItems = [];

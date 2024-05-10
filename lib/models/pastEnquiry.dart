@@ -41,11 +41,12 @@ class PastEnquiry {
     return PastEnquiry(
       id: map['id'] as int,
       company: map['company'] as String,
-      imageUrl: map['url'] as String,
+      imageUrl: map['url'] != null ? map['url'] as String : '',
       state: map['state'] as String,
       address: map['address'] as String,
       axel: map['axel'] != null ? map['axel'] as String : '',
-      offeredPrice: map['offered_price'] != null ? map['offered_price'] as String : '',
+      offeredPrice:
+          map['offered_price'] != null ? map['offered_price'] as String : '',
       status: map['status'] as String,
       carName: map['car_name'] as String,
     );
@@ -53,5 +54,6 @@ class PastEnquiry {
 
   String toJson() => json.encode(toMap());
 
-  factory PastEnquiry.fromJson(String source) => PastEnquiry.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory PastEnquiry.fromJson(String source) =>
+      PastEnquiry.fromMap(json.decode(source) as Map<String, dynamic>);
 }

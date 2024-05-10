@@ -29,7 +29,9 @@ class EditEnqSubAdmin extends HookWidget {
       }
       bool success = await SubAdminService.updateEnquiry(body: {
         'id': enq.id.toString(),
-        'price': _newOfferedPrice.text.trim().toString(),
+        'price': _newOfferedPrice.text.trim().toString().isEmpty
+            ? ""
+            : _newOfferedPrice.text.trim().toString(),
         'status': status.value
       });
       if (success) {
@@ -74,17 +76,18 @@ class EditEnqSubAdmin extends HookWidget {
                     height: 20,
                   ),
                   TextFormField(
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
+                    maxLines: 2,
                     controller: _newOfferedPrice,
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Enter some value';
-                      }
-                      if (value.length > 0) {
-                        return null;
-                      }
-                      return 'Enter valid price';
-                    },
+                    // validator: (value) {
+                    //   if (value == null) {
+                    //     return 'Enter some value';
+                    //   }
+                    //   if (value.length > 0) {
+                    //     return null;
+                    //   }
+                    //   return 'Enter valid price';
+                    // },
                     decoration: InputDecoration(
                       label: Text('Enter the new offered price'),
                       border: OutlineInputBorder(),

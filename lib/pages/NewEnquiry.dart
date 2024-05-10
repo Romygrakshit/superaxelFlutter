@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -11,7 +10,6 @@ import 'package:loginuicolors/services/firebase_messaging.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
-import 'package:http/http.dart' as http;
 
 class NewEnquiries extends StatefulWidget {
   const NewEnquiries({super.key});
@@ -64,12 +62,12 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         context);
 
     // send notification to SubAdmin
-    await PushNotifications.showSimpleNotification(
-        id: Globals.subAdminId,
-        fcmToken: Globals.subAdminDeviceToken,
-        title: "New Enquiry Created",
-        body: Globals.garageName,
-        payload: _selectedCarName.toString());
+    // await PushNotifications.showSimpleNotification(
+    //     id: Globals.subAdminId,
+    //     fcmToken: Globals.subAdminDeviceToken,
+    //     title: "New Enquiry Created",
+    //     body: Globals.garageName,
+    //     payload: _selectedCarName.toString());
   }
 
   pickFiles() async {
@@ -436,36 +434,20 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            if (files.isNotEmpty &&
-                                _selectedCarName.toString().isNotEmpty &&
-                                _selectedCompany.toString().isNotEmpty) {
-                              submitEnquiry(context);
-                            } else {
+                            if (_selectedCompany == null ||
+                                _selectedCompany!.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Fill all fields")));
+                                SnackBar(
+                                    content: Text("Please select a company")),
+                              );
+                            } else if (_selectedCarName == null ||
+                                _selectedCarName!.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please select a car")),
+                              );
+                            } else {
+                              submitEnquiry(context);
                             }
-                            pushNotification
-                                .getDeviceToken()
-                                .then((value) async {
-                              var data = {
-                                'to': value,
-                                'priority': 'high',
-                                'notification': {
-                                  'title': 'New Enquiry',
-                                  'body': '${Globals.garageName}',
-                                },
-                              };
-                              await http.post(
-                                  Uri.parse(
-                                      'https://fcm.googleapis.com/fcm/send'),
-                                  body: jsonEncode(data),
-                                  headers: {
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                    'Authorization':
-                                        'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
-                                  });
-                            });
                           },
                           child: const Text('Submit'),
                         ),

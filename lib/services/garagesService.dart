@@ -130,6 +130,7 @@ class GaragesService {
         log("$token", name: "Garage Device Token");
         String id = "${Globals.garageId}";
         garageFCMToken(context, id, token!);
+        Globals.garageFcmtoken = token;
 
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(decoded["message"])));
