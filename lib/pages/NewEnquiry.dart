@@ -26,10 +26,10 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   int? _selectedCar;
   String? _selectedCarName;
   String? _selectedAxel;
-  List<File>? files = [];
+  List<File> files = [];
   bool isLocation = false;
-  double? lat = 0;
-  double? long = 0;
+  double lat = 0;
+  double long = 0;
   String? address = '';
   bool companySelected = false;
   bool carSelected = false;
@@ -47,48 +47,28 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   late Position position;
 
   ScrollController _scrollController = ScrollController();
-  PushNotifications pushNotification = PushNotifications();
 
   void submitEnquiry(BuildContext context) async {
     // create an instance of pushNotification Class
-    if (files!.isNotEmpty || address!.isNotEmpty) {
-      // send Enquiry on Back-end
-      EnquiryService.createEnquiry(
-          files,
-          address!,
-          lat.toString(),
-          long.toString(),
-          _selectedCompany.toString(),
-          _selectedCarName.toString(),
-          _selectedAxel.toString(),
-          priceOfEnquiry,
-          context);
 
-      // send notification to SubAdmin
-      await PushNotifications.showSimpleNotification(
-          id: Globals.subAdminId,
-          fcmToken: Globals.subAdminDeviceToken,
-          title: "New Enquiry Created",
-          body: Globals.garageName,
-          payload: _selectedCarName.toString());
-    } else {
-      EnquiryService.createEnquiry(
-          null,
-          null,
-          null,
-          null,
-          _selectedCompany.toString(),
-          _selectedCarName.toString(),
-          _selectedAxel.toString(),
-          priceOfEnquiry,
-          context);
-      await PushNotifications.showSimpleNotification(
-          id: Globals.subAdminId,
-          fcmToken: Globals.subAdminDeviceToken,
-          title: "New Enquiry Created",
-          body: Globals.garageName,
-          payload: _selectedCarName.toString());
-    }
+    EnquiryService.createEnquiry(
+        files,
+        address!,
+        lat.toString(),
+        long.toString(),
+        _selectedCompany.toString(),
+        _selectedCarName.toString(),
+        _selectedAxel.toString(),
+        priceOfEnquiry,
+        context);
+
+    // send notification to SubAdmin
+    // await PushNotifications.showSimpleNotification(
+    //     id: Globals.subAdminId,
+    //     fcmToken: Globals.subAdminDeviceToken,
+    //     title: "New Enquiry Created",
+    //     body: Globals.garageName,
+    //     payload: _selectedCarName.toString());
   }
 
   pickFiles() async {
@@ -163,24 +143,13 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     super.dispose();
   }
 
-  // Fields are mandatory....
-  String? get _errorText {
-    final car = _selectedCar.toString();
-    final company = _selectedCompany.toString();
-    final axel = _selectedAxel.toString();
-    if (car.isEmpty || company.isEmpty || axel.isEmpty) {
-      return 'Can\'t be empty';
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return isLocation
         ? Scaffold(
             body: OpenStreetMapSearchAndPick(
               // center: LatLong(26.82, 75.85),
-              center: LatLong(lat!, long!),
+              center: LatLong(lat, long),
               onPicked: (pickedData) {
                 debugPrint("${pickedData.toString()}");
                 setState(() {
@@ -214,7 +183,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         labelText: 'Select Company',
-                        errorText: _errorText,
                       ),
                       value: _selectedCompany,
                       items: [
@@ -254,7 +222,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Select Car',
-                          errorText: _errorText,
                         ),
                         value: _selectedCar,
                         items: [
@@ -296,7 +263,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           labelText: 'Select Axel (left/right)',
-                          errorText: _errorText,
                         ),
                         items: const [
                           DropdownMenuItem(value: 'Left', child: Text('Left')),
@@ -378,7 +344,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 child: const Text('AddImages'),
                               ),
                             ),
-                            Text('${files!.length} images selected'),
+                            Text('${files.length} images selected'),
                             SizedBox(
                               height: 20,
                             ),
@@ -391,7 +357,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 maxLines: 2,
                               ),
                             ),
-                            files!.isEmpty
+                            files.isEmpty
                                 ? const SizedBox.shrink()
                                 : Container(
                                     padding: const EdgeInsets.only(top: 10.0),
@@ -407,7 +373,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                         controller: _scrollController,
                                         child: Column(
                                           children: [
-                                            for (var image in files!)
+                                            for (var image in files)
                                               Container(
                                                 margin: EdgeInsets.all(10),
                                                 height: 150,
@@ -469,28 +435,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 _selectedAxel.toString().isNotEmpty &&
                                 _selectedCompany.toString().isNotEmpty) {
                               submitEnquiry(context);
-                              pushNotification
-                                  .getDeviceToken()
-                                  .then((value) async {
-                                var data = {
-                                  'to': value,
-                                  'priority': 'high',
-                                  'notification': {
-                                    'title': 'New Enquiry',
-                                    'body': '${Globals.garageName}',
-                                  },
-                                };
-                                await http.post(
-                                    Uri.parse(
-                                        'https://fcm.googleapis.com/fcm/send'),
-                                    body: jsonEncode(data),
-                                    headers: {
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                      'Authorization':
-                                          'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
-                                    });
-                              });
                             } else {
                               return null;
                             }
