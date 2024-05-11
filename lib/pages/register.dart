@@ -341,6 +341,7 @@ class _MyRegisterState extends State<MyRegister> {
                                               value: state.state,
                                               child: Text("${state.state}"))
                                       ],
+                                      value: dropDownValue,
                                       decoration: InputDecoration(
                                           fillColor: Colors.grey.shade100,
                                           filled: true,
@@ -361,7 +362,9 @@ class _MyRegisterState extends State<MyRegister> {
                                             await GaragesService()
                                                 .getAllCities(index + 1);
                                         setState(() {
+                                          Globals.allCity.clear();
                                           Globals.allCity = cities;
+                                          _city = Globals.allCity[0];
                                         });
                                         // updateCityDropdown();
                                       },
@@ -375,6 +378,7 @@ class _MyRegisterState extends State<MyRegister> {
                                           DropdownMenuItem(
                                               value: city, child: Text(city))
                                       ],
+                                      value: _city,
                                       decoration: InputDecoration(
                                           fillColor: Colors.grey.shade100,
                                           filled: true,

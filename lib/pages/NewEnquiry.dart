@@ -195,17 +195,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         });
                         List<Cars> cars =
                             await GaragesService.getAllCars(value.toString());
+
+                        setState(() {
+                          companySelected = true;
+                          Globals.allCars = cars;
+                        });
                         setState(() {
                           Globals.allCars = [];
                           _selectedCompany = value.toString();
                           carSelected = false;
                           _selectedCar = null;
                           _selectedCarName = null;
-                        });
-
-                        setState(() {
-                          companySelected = true;
-                          Globals.allCars = cars;
                         });
                       },
                     ),
@@ -220,7 +220,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                           ),
                           labelText: 'Select Car',
                         ),
-                        value: _selectedCar,
+                        value: _selectedCarName,
                         items: [
                           for (Cars car in Globals.allCars)
                             DropdownMenuItem(

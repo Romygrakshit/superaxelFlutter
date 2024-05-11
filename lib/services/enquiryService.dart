@@ -64,7 +64,7 @@ class EnquiryService {
     request.fields['car_name'] = carName;
     request.fields['axel'] = axel;
     request.fields['offered_price'] = offeredPrice;
-    request.fields['fcmToken'] = Globals.garageFcmtoken;
+    // request.fields['fcmToken'] = Globals.garageFcmtoken;
 
     log(request.fields.toString(), name: "enquiry request data:");
     // print('enquiry request data: ${request.fields.toString()}');
@@ -89,7 +89,7 @@ class EnquiryService {
         log(value);
         var decoded = jsonDecode(value);
         print(decoded);
-        if (decoded['success']) {
+        if (response.statusCode == 200) {
           pushNotification.getDeviceToken().then((value) async {
             var data = {
               'to': value,

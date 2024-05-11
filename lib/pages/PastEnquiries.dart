@@ -43,9 +43,10 @@ class _PastEnquiriesState extends State<PastEnquiries> {
             : ListView.builder(
                 itemCount: enquiries.length,
                 itemBuilder: (context, index) {
-                  final imageUrl = enquiries[index]
-                      .imageUrl
-                      .replaceAll('/..', Globals.restApiUrl);
+                  final imageUrl = enquiries[index] != ""
+                      ? "${Globals.restApiUrl + enquiries[index].imageUrl}"
+                      : "";
+                  // .startsWith('/..', Globals.restApiUrl): "";
                   log("$imageUrl", name: "image eror");
                   return SizedBox(
                     child: ClipRRect(

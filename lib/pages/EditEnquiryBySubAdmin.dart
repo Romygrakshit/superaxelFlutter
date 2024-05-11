@@ -147,7 +147,7 @@ class EditEnqSubAdmin extends HookWidget {
                                     margin: EdgeInsets.only(
                                         left: 12, right: 12, bottom: 5),
                                     child: Image.network(
-                                      imageUrls[index],
+                                      "${Globals.restApiUrl + imageUrls[index]}",
                                       fit: BoxFit.contain,
                                     ),
                                   );
