@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
@@ -11,7 +10,6 @@ import 'package:loginuicolors/services/firebase_messaging.dart';
 import 'package:loginuicolors/services/garagesService.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
-import 'package:http/http.dart' as http;
 
 class NewEnquiries extends StatefulWidget {
   const NewEnquiries({super.key});
@@ -30,7 +28,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   bool isLocation = false;
   double lat = 0;
   double long = 0;
-  String? address = '';
+  String address = '';
   bool companySelected = false;
   bool carSelected = false;
   bool axelSelected = false;
@@ -47,13 +45,14 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   late Position position;
 
   ScrollController _scrollController = ScrollController();
+  PushNotifications pushNotification = PushNotifications();
 
   void submitEnquiry(BuildContext context) async {
     // create an instance of pushNotification Class
-
+    // send Enquiry on Back-end
     EnquiryService.createEnquiry(
         files,
-        address!,
+        address,
         lat.toString(),
         long.toString(),
         _selectedCompany.toString(),
@@ -85,21 +84,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     }
   }
 
-  Future<void> getLocation() async {
-    position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    debugPrint(position.longitude.toString());
-    debugPrint(position.latitude.toString());
-
-    long = position.longitude;
-    lat = position.latitude;
-
-    setState(() {
-      //refresh UI
-      loadLocation = false;
-    });
-  }
-
   Future<void> checkGps() async {
     loadLocation = true;
     servicestatus = await Geolocator.isLocationServiceEnabled();
@@ -110,10 +94,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           debugPrint('Location permissions are denied');
-          haspermission = false;
         } else if (permission == LocationPermission.deniedForever) {
           debugPrint("'Location permissions are permanently denied");
-          haspermission = false;
         } else {
           haspermission = true;
         }
@@ -134,6 +116,21 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
     setState(() {
       //refresh the UI
+    });
+  }
+
+  Future<void> getLocation() async {
+    position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.longitude.toString());
+    debugPrint(position.latitude.toString());
+
+    long = position.longitude;
+    lat = position.latitude;
+
+    setState(() {
+      //refresh UI
+      loadLocation = false;
     });
   }
 
@@ -198,17 +195,17 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         });
                         List<Cars> cars =
                             await GaragesService.getAllCars(value.toString());
+
+                        setState(() {
+                          companySelected = true;
+                          Globals.allCars = cars;
+                        });
                         setState(() {
                           Globals.allCars = [];
                           _selectedCompany = value.toString();
                           carSelected = false;
                           _selectedCar = null;
                           _selectedCarName = null;
-                        });
-
-                        setState(() {
-                          companySelected = true;
-                          Globals.allCars = cars;
                         });
                       },
                     ),
@@ -273,14 +270,20 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         hint: const Text('Select an option'),
                         onChanged: (value) {
                           setState(() {
-                            if (value == 'Left')
-                              priceOfEnquiry = left;
-                            else if (value == 'Right')
-                              priceOfEnquiry = right;
-                            else
-                              priceOfEnquiry = '\nLeft: $left\nRight: $right';
-                            _selectedAxel = value as String?;
-                            axelSelected = true;
+                            switch (value) {
+                              case "Left":
+                                axelSelected = true;
+                                priceOfEnquiry = left;
+                                break;
+                              case "Right":
+                                axelSelected = true;
+                                priceOfEnquiry = right;
+                                break;
+                              default:
+                                axelSelected = true;
+                                priceOfEnquiry = '\nLeft: $left\nRight: $right';
+                                break;
+                            }
                           });
                         },
                       )
@@ -417,7 +420,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
                                     // color: Colors.blue,
                                     fontSize: 16),
-                                address!,
+                                address,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -431,12 +434,19 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            if (_selectedCar.toString().isNotEmpty &&
-                                _selectedAxel.toString().isNotEmpty &&
-                                _selectedCompany.toString().isNotEmpty) {
-                              submitEnquiry(context);
+                            if (_selectedCompany == null ||
+                                _selectedCompany!.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text("Please select a company")),
+                              );
+                            } else if (_selectedCarName == null ||
+                                _selectedCarName!.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Please select a car")),
+                              );
                             } else {
-                              return null;
+                              submitEnquiry(context);
                             }
                           },
                           child: const Text('Submit'),
