@@ -4,8 +4,10 @@ import 'dart:convert';
 class Enquiry {
   int id;
   String address;
-  String lat;
-  String lng;
+  String? lat;
+  String? lng;
+  String Glat;
+  String Glng;
   int companyId;
   int carId;
   String? company;
@@ -24,8 +26,10 @@ class Enquiry {
   Enquiry({
     required this.id,
     required this.address,
-    required this.lat,
-    required this.lng,
+    this.lng,
+    this.lat,
+    required this.Glng,
+    required this.Glat,
     required this.companyId,
     required this.carId,
     required this.axel,
@@ -49,6 +53,8 @@ class Enquiry {
       'address': address,
       'lat': lat,
       'lng': lng,
+      'Glat': Glat,
+      'Glng': Glng,
       'company_id': companyId,
       'car_id': carId,
       'axel': axel,
@@ -61,7 +67,7 @@ class Enquiry {
       'mobile_number': mobileNumber,
       'company': company,
       'car_name': carName,
-      'garage_image':imagesUrls,
+      'garage_image': imagesUrls,
       'image_urls': imagesUrlsEnquiry,
     };
   }
@@ -72,6 +78,8 @@ class Enquiry {
       address: map['address'] as String,
       lat: map['lat'] as String,
       lng: map['lng'] as String,
+      Glat: map['Glat'] as String,
+      Glng: map['Glng'] as String,
       companyId: map['company_id'] as int,
       carId: map['car_id'] as int,
       axel: map['axel'] as String,
@@ -79,16 +87,23 @@ class Enquiry {
       dateTime: map['date_time'] as String,
       status: map['status'] as String,
       state: map['state'] as String,
-      mobileNumber: map['mobile_number'] != null ? map['mobile_number'] as String : null,
+      mobileNumber:
+          map['mobile_number'] != null ? map['mobile_number'] as String : null,
       company: map['company'] != null ? map['company'] as String : null,
       carName: map['car_name'] != null ? map['car_name'] as String : null,
-      imagesUrls: map['garage_image'] != null ? map['garage_image'].toString().split(',') : [],
-      imagesUrlsEnquiry: map['image_urls'] != null ? (map['image_urls'] as List<dynamic>).cast<String>(): [],
-      garageName: map['garage_name'] != null ? map['garage_name'] as String : null,
+      imagesUrls: map['garage_image'] != null
+          ? map['garage_image'].toString().split(',')
+          : [],
+      imagesUrlsEnquiry: map['image_urls'] != null
+          ? (map['image_urls'] as List<dynamic>).cast<String>()
+          : [],
+      garageName:
+          map['garage_name'] != null ? map['garage_name'] as String : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Enquiry.fromJson(String source) => Enquiry.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Enquiry.fromJson(String source) =>
+      Enquiry.fromMap(json.decode(source) as Map<String, dynamic>);
 }
