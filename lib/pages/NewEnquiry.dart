@@ -35,33 +35,41 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   String priceOfEnquiry = '';
   String left = '';
   String right = '';
+  bool isLoading = false;
 
   bool loadLocation = false;
 
-  // locator
+  // Locator
   bool servicestatus = false;
   bool haspermission = false;
   late LocationPermission permission;
   late Position position;
 
-  ScrollController _scrollController = ScrollController();
-  PushNotifications pushNotification = PushNotifications();
+  final ScrollController _scrollController = ScrollController();
+  final PushNotifications pushNotification = PushNotifications();
 
   void submitEnquiry(BuildContext context) async {
-    // create an instance of pushNotification Class
-    // send Enquiry on Back-end
+    setState(() {
+      isLoading = true; // Set isLoading to true
+    });
+    // Send Enquiry to Backend
     EnquiryService.createEnquiry(
-        files,
-        address,
-        lat.toString(),
-        long.toString(),
-        _selectedCompany.toString(),
-        _selectedCarName.toString(),
-        _selectedAxel.toString(),
-        priceOfEnquiry,
-        context);
+      files,
+      address,
+      lat.toString(),
+      long.toString(),
+      _selectedCompany.toString(),
+      _selectedCarName.toString(),
+      _selectedAxel.toString(),
+      priceOfEnquiry,
+      context,
+    );
 
-    // send notification to SubAdmin
+    setState(() {
+      isLoading = false; // Set isLoading to false after API call is completed
+    });
+
+    // Send notification to SubAdmin
     // await PushNotifications.showSimpleNotification(
     //     id: Globals.subAdminId,
     //     fcmToken: Globals.subAdminDeviceToken,
@@ -85,7 +93,9 @@ class _NewEnquiriesState extends State<NewEnquiries> {
   }
 
   Future<void> checkGps() async {
-    loadLocation = true;
+    setState(() {
+      loadLocation = true;
+    });
     servicestatus = await Geolocator.isLocationServiceEnabled();
     if (servicestatus) {
       permission = await Geolocator.checkPermission();
@@ -104,18 +114,14 @@ class _NewEnquiriesState extends State<NewEnquiries> {
       }
 
       if (haspermission) {
-        setState(() {
-          //refresh the UI
-        });
-
         await getLocation();
       }
     } else {
-      print("GPS Service is not enabled, turn on GPS location");
+      debugPrint("GPS Service is not enabled, turn on GPS location");
     }
 
     setState(() {
-      //refresh the UI
+      loadLocation = false;
     });
   }
 
@@ -125,12 +131,9 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     debugPrint(position.longitude.toString());
     debugPrint(position.latitude.toString());
 
-    long = position.longitude;
-    lat = position.latitude;
-
     setState(() {
-      //refresh UI
-      loadLocation = false;
+      long = position.longitude;
+      lat = position.latitude;
     });
   }
 
@@ -145,17 +148,12 @@ class _NewEnquiriesState extends State<NewEnquiries> {
     return isLocation
         ? Scaffold(
             body: OpenStreetMapSearchAndPick(
-              // center: LatLong(26.82, 75.85),
               center: LatLong(lat, long),
               onPicked: (pickedData) {
-                debugPrint("${pickedData.toString()}");
                 setState(() {
                   lat = pickedData.latLong.latitude;
                   long = pickedData.latLong.longitude;
                   address = pickedData.addressName;
-                  log(pickedData.latLong.latitude.toString());
-                  log(pickedData.latLong.longitude.toString());
-                  // log(pickedData.address);
                   isLocation = false;
                 });
               },
@@ -185,13 +183,18 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       items: [
                         for (Companies company in Globals.allCompanies)
                           DropdownMenuItem(
-                              value: company.company,
-                              child: Text("${company.company}"))
+                            value: company.company,
+                            child: Text(company.company),
+                          )
                       ],
                       hint: const Text('Select an option'),
                       onChanged: (value) async {
                         setState(() {
                           companySelected = false;
+                          _selectedCompany = value.toString();
+                          carSelected = false;
+                          _selectedCar = null;
+                          _selectedCarName = null;
                         });
                         List<Cars> cars =
                             await GaragesService.getAllCars(value.toString());
@@ -199,13 +202,6 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         setState(() {
                           companySelected = true;
                           Globals.allCars = cars;
-                        });
-                        setState(() {
-                          Globals.allCars = [];
-                          _selectedCompany = value.toString();
-                          carSelected = false;
-                          _selectedCar = null;
-                          _selectedCarName = null;
                         });
                       },
                     ),
@@ -220,11 +216,13 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                           ),
                           labelText: 'Select Car',
                         ),
-                        value: _selectedCarName,
+                        value: _selectedCar,
                         items: [
                           for (Cars car in Globals.allCars)
                             DropdownMenuItem(
-                                value: car.id, child: Text("${car.carName}"))
+                              value: car.id,
+                              child: Text(car.carName),
+                            )
                         ],
                         hint: const Text('Select an option'),
                         onChanged: (value) async {
@@ -236,18 +234,18 @@ class _NewEnquiriesState extends State<NewEnquiries> {
 
                           if (response.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('No Prices Found')));
+                              const SnackBar(content: Text('No Prices Found')),
+                            );
                             return;
                           }
-                          left = response[0];
-                          right = response[1];
-                          log('$left and $right');
                           setState(() {
                             _selectedCar = int.parse(value.toString());
                             carSelected = true;
+                            left = response[0];
+                            right = response[1];
                           });
                         },
-                      )
+                      ),
                     ],
                     if (carSelected) ...[
                       const SizedBox(
@@ -270,6 +268,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                         hint: const Text('Select an option'),
                         onChanged: (value) {
                           setState(() {
+                            _selectedAxel = value.toString();
                             switch (value) {
                               case "Left":
                                 axelSelected = true;
@@ -281,59 +280,23 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                 break;
                               default:
                                 axelSelected = true;
-                                priceOfEnquiry = '\nLeft: $left\nRight: $right';
+                                priceOfEnquiry = 'Left: $left\nRight: $right';
                                 break;
                             }
                           });
                         },
-                      )
+                      ),
                     ],
-
-                    // if (carSelected)
-                    //   DropdownButtonFormField(
-                    //     value: _selectedState,
-                    //     decoration: const InputDecoration(
-                    //       border: UnderlineInputBorder(),
-                    //       labelText: 'Enter the State',
-                    //     ),
-                    //     items: [
-                    //       for (StateDecode state in Globals.allStates)
-                    //         DropdownMenuItem(
-                    //             value: state.state,
-                    //             child: Text("${state.state}"))
-                    //     ],
-                    //     hint: const Text('Select a State'),
-                    //     onChanged: (value) {
-                    //       _selectedState = value.toString();
-                    //     },
-                    //   ),
-                    //  DropdownButtonFormField(
-                    //           items: [
-                    //             for (StateDecode state in Globals.allStates)
-                    //               DropdownMenuItem(
-                    //                   value: state.state,
-                    //                   child: Text("${state.state}"))
-                    //           ],
-                    //           decoration: InputDecoration(
-                    //               fillColor: Colors.grey.shade100,
-                    //               filled: true,
-                    //               hintText: "Select State",
-                    //               border: OutlineInputBorder(
-                    //                 borderRadius: BorderRadius.circular(10),
-                    //               )),
-                    //           onChanged: (value) {
-                    //             dropDownValue = value.toString();
-                    //           },
-                    //         ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     if (axelSelected)
                       Center(
-                          child: Text(
-                        'Price : $priceOfEnquiry',
-                        style: TextStyle(fontSize: 20),
-                      )),
+                        child: Text(
+                          'Price : $priceOfEnquiry',
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -344,16 +307,16 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () => pickFiles(),
-                                child: const Text('AddImages'),
+                                child: const Text('Add Images'),
                               ),
                             ),
                             Text('${files.length} images selected'),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * 0.8,
-                              child: Text(
+                              child: const Text(
                                 '*If Uploaded Photos, we will provide guaranteed prices',
                                 style: TextStyle(fontSize: 13),
                                 textDirection: TextDirection.ltr,
@@ -367,10 +330,10 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                     height: 300,
                                     child: Scrollbar(
                                       thumbVisibility:
-                                          true, //always show scrollbar
-                                      thickness: 4, //width of scrollbar
-                                      radius: Radius.circular(
-                                          20), //corner radius of scrollbar
+                                          true, // Always show scrollbar
+                                      thickness: 4, // Width of scrollbar
+                                      radius: const Radius.circular(
+                                          20), // Corner radius of scrollbar
                                       controller: _scrollController,
                                       child: SingleChildScrollView(
                                         controller: _scrollController,
@@ -378,7 +341,8 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                           children: [
                                             for (var image in files)
                                               Container(
-                                                margin: EdgeInsets.all(10),
+                                                margin:
+                                                    const EdgeInsets.all(10),
                                                 height: 150,
                                                 width: MediaQuery.of(context)
                                                         .size
@@ -402,7 +366,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: loadLocation
-                                  ? CircularProgressIndicator.adaptive()
+                                  ? const CircularProgressIndicator.adaptive()
                                   : ElevatedButton(
                                       onPressed: () async {
                                         await checkGps();
@@ -416,10 +380,9 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                             SizedBox(
                               width: 300,
                               child: Text(
-                                style: TextStyle(
-
-                                    // color: Colors.blue,
-                                    fontSize: 16),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
                                 address,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -430,29 +393,46 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                       ],
                     ),
                     Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_selectedCompany == null ||
-                                _selectedCompany!.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text("Please select a company")),
-                              );
-                            } else if (_selectedCarName == null ||
-                                _selectedCarName!.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Please select a car")),
-                              );
-                            } else {
-                              submitEnquiry(context);
-                            }
-                          },
-                          child: const Text('Submit'),
-                        ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_selectedCompany == null ||
+                                    _selectedCompany!.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text("Please select a company")),
+                                  );
+                                } else if (_selectedCarName == null ||
+                                    _selectedCarName!.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Please select a car")),
+                                  );
+                                } else if (_selectedAxel == null ||
+                                    _selectedAxel!.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text("Please select car axle")),
+                                  );
+                                } else {
+                                  submitEnquiry(context);
+                                }
+                              },
+                              child: const Text('Submit'),
+                            ),
+                          ),
+                          if (isLoading)
+                            const Positioned.fill(
+                              child: CircularProgressIndicator(),
+                            ),
+                        ],
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),

@@ -185,12 +185,13 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                   Text(
                                     'Price: ${enquiry.offeredPrice}',
                                     style: TextStyle(
-                                        color: Color.fromARGB(
-                                            255, 215, 0, 0),
+                                        color: Color.fromARGB(255, 215, 0, 0),
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16),
                                   ),
-                                  SizedBox(height: 5,),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
                                   SizedBox(
                                     width: 100,
                                     child: ElevatedButton(
@@ -207,13 +208,16 @@ class _SubAdminEnquiriesState extends State<SubAdminEnquiries> {
                                           Status: ${enquiry.status}
                                           Garage name: ${enquiry.garageName}
                                           Garage address: ${enquiry.address}
-                                          Map location: http://maps.google.com/maps?z=12&t=m&q=loc:${enquiry.lat}+${enquiry.lng}""";
+                                          Enquiry location: http://maps.google.com/maps?z=12&t=m&q=loc:${enquiry.lat}+${enquiry.lng}
+                                          Garage location: http://maps.google.com/maps?z=12&t=m&q=loc:${enquiry.Glat}+${enquiry.Glng}""";
                                         await Share.share('$textToShare');
                                       },
                                       child: Text("Share"),
                                     ),
                                   ),
-                                  SizedBox(height: 5,),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
                                 ],
                               ),
                             ],

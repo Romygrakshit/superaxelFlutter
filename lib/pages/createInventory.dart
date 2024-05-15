@@ -15,6 +15,7 @@ class CreateInventory extends StatefulWidget {
 class _CreateInventoryState extends State<CreateInventory> {
   String? _selectedCompany;
   String? _selectedCar;
+  int? _carId;
   bool isLocation = false;
   double lat = 0;
   double long = 0;
@@ -38,6 +39,13 @@ class _CreateInventoryState extends State<CreateInventory> {
           rightInventory.text,
           context);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    leftPrice.text = Globals.leftAxlePrice;
+    rightprice.text = Globals.rightAxlePrice;
   }
 
   @override
@@ -67,6 +75,9 @@ class _CreateInventoryState extends State<CreateInventory> {
                 setState(() {
                   _selectedCompany = value.toString();
                   companySelected = true;
+                  carSelected = false;
+                  _selectedCar = null;
+                  _carId = null;
                 });
               },
             ),
@@ -79,17 +90,25 @@ class _CreateInventoryState extends State<CreateInventory> {
                   border: OutlineInputBorder(),
                   labelText: 'Select Car',
                 ),
-                value: _selectedCar,
+                value: _carId,
                 items: [
                   for (Cars car in Globals.allCars)
-                    DropdownMenuItem(
-                        value: car.carName, child: Text("${car.carName}"))
+                    DropdownMenuItem(value: car.id, child: Text(car.carName))
                 ],
                 hint: const Text('Select an option'),
                 onChanged: (value) async {
                   setState(() {
-                    _selectedCar = value.toString();
+                    _selectedCar = Globals.allCars
+                        .firstWhere((element) => element.id == value)
+                        .carName;
+                    _carId = value as int;
+                    print(_carId.runtimeType);
                     carSelected = true;
+                  });
+                  await SubAdminService.getInventry(_carId!,context);
+                  setState(() {
+                    leftPrice.text = Globals.leftAxlePrice;
+                    rightprice.text = Globals.rightAxlePrice;
                   });
                 },
               ),
@@ -103,6 +122,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                   children: [
                     TextFormField(
                       keyboardType: TextInputType.number,
+                      readOnly: true,
                       validator: (value) {
                         if (value!.length > 1)
                           return null;
@@ -135,6 +155,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                     ),
                     TextFormField(
                       keyboardType: TextInputType.number,
+                      readOnly: true,
                       validator: (value) {
                         if (value!.length > 1)
                           return null;

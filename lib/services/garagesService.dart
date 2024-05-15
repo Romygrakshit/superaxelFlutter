@@ -83,6 +83,7 @@ class GaragesService {
         // Navigate to Home screen
         Navigator.pushReplacementNamed(context, 'Home');
       } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${response}")));
         // Handle error response
         throw ('Error: ${response.statusCode}');
       }

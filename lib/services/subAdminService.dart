@@ -46,13 +46,13 @@ class SubAdminService {
         body: {'sID': subAdminId},
       );
       var decoded = jsonDecode(response.body);
-       log(response.body);
+      log(response.body);
       var enquiries = decoded["data"];
       for (var enq in enquiries) {
         Enquiry newenq = Enquiry.fromMap(enq);
         dedcodedEnq.add(newenq);
       }
-      log("$dedcodedEnq");
+      // log("$dedcodedEnq");
       return dedcodedEnq;
     } catch (e) {
       debugPrint("error is $e");
@@ -106,6 +106,31 @@ class SubAdminService {
     } catch (e) {
       debugPrint("error is $e");
       return [];
+    }
+  }
+
+  static getInventry(int carId, context) async {
+    try {
+      final response = await http
+          .post(Uri.parse("$_baseUrl/getInventoryDetails"), body: {
+        "car_id": carId.toString(),
+        "subadmin_id": Globals.subAdminId.toString()
+      });
+      var decoded = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        debugPrint(response.body);
+        if (decoded["data"].isEmpty) {
+          Globals.leftAxlePrice = "0";
+          Globals.rightAxlePrice = "0";
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("No Inventry added by SubAdmin")));
+        } else {
+          Globals.leftAxlePrice = decoded["data"][0]["left_axel_price"];
+          Globals.rightAxlePrice = decoded["data"][0]["right_axel_price"];
+        }
+      }
+    } catch (e) {
+      debugPrint("error in inventry api $e");
     }
   }
 }

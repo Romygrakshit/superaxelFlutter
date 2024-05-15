@@ -20,13 +20,11 @@ class MyRegister extends StatefulWidget {
 class _MyRegisterState extends State<MyRegister> {
   TextEditingController _garageName = TextEditingController();
   TextEditingController _mobNumber = TextEditingController();
-  // TextEditingController _city = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _address = TextEditingController();
   final _signUpKey = GlobalKey<FormState>();
 
-  File _image = File('');
-  // late String lat, long;
+  File _image = File("");
   double lat = 0;
   double long = 0;
   bool imageloaded = false;
@@ -34,6 +32,7 @@ class _MyRegisterState extends State<MyRegister> {
   String? dropDownValue;
   String? _city;
   bool isLocation = false;
+  bool isRegister = false;
 
   // locator
   bool servicestatus = false;
@@ -44,27 +43,37 @@ class _MyRegisterState extends State<MyRegister> {
 
   String address = '';
 
-  signUp(BuildContext context) async {
-    await GaragesService().signUp(
-        _image,
-        _garageName.text,
-        dropDownValue.toString(),
-        _city.toString(),
-        _address.text,
-        _mobNumber.text,
-        lat.toString(),
-        long.toString(),
-        _password.text,
-        context);
+  Future<void> signUp(BuildContext context) async {
+    setState(() {
+      isRegister = true;
+    });
+    await GaragesService()
+        .signUp(
+      _image,
+      _garageName.text,
+      dropDownValue.toString(),
+      _city.toString(),
+      _address.text,
+      _mobNumber.text,
+      lat.toString(),
+      long.toString(),
+      _password.text,
+      context,
+    )
+        .then((value) {
+      setState(() {
+        isRegister = false;
+      });
+    });
   }
 
-  addImage() async {
+  Future<void> addImage() async {
     try {
       FilePickerResult? result =
           await FilePicker.platform.pickFiles(type: FileType.image);
       if (result != null) {
         setState(() {
-          _image = File(result.files.single.path.toString());
+          _image = File(result.files.single.path!);
           imageloaded = true;
         });
       }
@@ -74,7 +83,9 @@ class _MyRegisterState extends State<MyRegister> {
   }
 
   Future<void> checkGps() async {
-    loadLocation = true;
+    setState(() {
+      loadLocation = true;
+    });
     servicestatus = await Geolocator.isLocationServiceEnabled();
     if (servicestatus) {
       permission = await Geolocator.checkPermission();
@@ -93,33 +104,24 @@ class _MyRegisterState extends State<MyRegister> {
       }
 
       if (haspermission) {
-        setState(() {
-          //refresh the UI
-        });
-
         await getLocation();
       }
     } else {
-      print("GPS Service is not enabled, turn on GPS location");
+      debugPrint("GPS Service is not enabled, turn on GPS location");
     }
 
     setState(() {
-      //refresh the UI
+      loadLocation = false;
     });
   }
 
   Future<void> getLocation() async {
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    debugPrint(position.longitude.toString());
-    debugPrint(position.latitude.toString());
-
-    long = position.longitude;
-    lat = position.latitude;
 
     setState(() {
-      //refresh UI
-      loadLocation = false;
+      long = position.longitude;
+      lat = position.latitude;
     });
   }
 
@@ -147,23 +149,22 @@ class _MyRegisterState extends State<MyRegister> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
+
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    // Assuming the first result is accurate
 
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
-      Placemark placemark =
-          placemarks[0]; // Assuming the first result is accurate
+      Placemark placemark = placemarks[0];
 
       String? state = placemark.administrativeArea;
       String? city = placemark.locality;
 
-      print(state.toString());
-      print(city.toString());
+      debugPrint(state.toString());
+      debugPrint(city.toString());
     } catch (error) {
-      print(error.toString());
+      debugPrint(error.toString());
     }
     return position;
   }
@@ -181,14 +182,10 @@ class _MyRegisterState extends State<MyRegister> {
             ? OpenStreetMapSearchAndPick(
                 center: LatLong(lat, long),
                 onPicked: (pickedData) {
-                  debugPrint("${pickedData.toString()}");
                   setState(() {
                     lat = pickedData.latLong.latitude;
                     long = pickedData.latLong.longitude;
                     address = pickedData.addressName;
-                    log(pickedData.latLong.latitude.toString());
-                    log(pickedData.latLong.longitude.toString());
-                    // log(pickedData.address);
                     isLocation = false;
                   });
                 },
@@ -218,33 +215,30 @@ class _MyRegisterState extends State<MyRegister> {
                                 margin: EdgeInsets.only(left: 35, right: 35),
                                 child: Column(
                                   children: [
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     imageloaded
                                         ? GestureDetector(
                                             onTap: () => addImage(),
                                             child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(2),
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            125),
-                                                    border: Border.all(
-                                                        color: Colors.red,
-                                                        width: 2)),
-                                                child: ClipRRect(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           125),
-                                                  child: Image.file(
-                                                    _image,
-                                                    fit: BoxFit.cover,
-                                                    height: 250,
-                                                    width: 250,
-                                                  ),
-                                                )),
+                                                  border: Border.all(
+                                                      color: Colors.red,
+                                                      width: 2)),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(125),
+                                                child: Image.file(
+                                                  _image,
+                                                  fit: BoxFit.cover,
+                                                  height: 250,
+                                                  width: 250,
+                                                ),
+                                              ),
+                                            ),
                                           )
                                         : DottedBorder(
                                             borderType: BorderType.Circle,
@@ -268,71 +262,63 @@ class _MyRegisterState extends State<MyRegister> {
                                                             .center,
                                                     children: const [
                                                       Icon(
-                                                        Icons
-                                                            .add_a_photo_outlined,
-                                                        color: Colors.white,
-                                                      ),
-                                                      Text(
-                                                        "Add Image",
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
+                                                          Icons
+                                                              .add_a_photo_outlined,
+                                                          color: Colors.white),
+                                                      Text("Add Image",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
                                                     ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     TextFormField(
                                       controller: _garageName,
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "Garage Name",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "Garage Name",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     TextFormField(
                                       controller: _mobNumber,
                                       style: TextStyle(color: Colors.black),
                                       keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "Mobile Number",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "Mobile Number",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     TextFormField(
                                       controller: _password,
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "Password",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "Password",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     DropdownButtonFormField(
                                       items: [
                                         for (StateDecode state
@@ -343,20 +329,18 @@ class _MyRegisterState extends State<MyRegister> {
                                       ],
                                       value: dropDownValue,
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "Select State",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "Select State",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                       onChanged: (value) async {
                                         int index = Globals.allStates
                                             .indexWhere((state) =>
                                                 state.state == value);
-                                        print(index + 1);
-                                        // code to get city list by using state index
-
                                         dropDownValue = value.toString();
                                         List<String> cities =
                                             await GaragesService()
@@ -366,12 +350,9 @@ class _MyRegisterState extends State<MyRegister> {
                                           Globals.allCity = cities;
                                           _city = Globals.allCity[0];
                                         });
-                                        // updateCityDropdown();
                                       },
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     DropdownButtonFormField(
                                       items: [
                                         for (String city in Globals.allCity)
@@ -380,86 +361,77 @@ class _MyRegisterState extends State<MyRegister> {
                                       ],
                                       value: _city,
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "City",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "City",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                       onChanged: (value) {
-                                        _city = value.toString();
+                                        setState(() {
+                                          _city = value.toString();
+                                        });
                                       },
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     TextFormField(
                                       controller: _address,
                                       style: TextStyle(color: Colors.black),
                                       decoration: InputDecoration(
-                                          fillColor: Colors.grey.shade100,
-                                          filled: true,
-                                          hintText: "Address",
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          )),
+                                        fillColor: Colors.grey.shade100,
+                                        filled: true,
+                                        hintText: "Address",
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
+                                    SizedBox(height: 30),
                                     loadLocation
                                         ? Center(
                                             child: CircularProgressIndicator
-                                                .adaptive(),
-                                          )
+                                                .adaptive())
                                         : GestureDetector(
                                             onTap: () async {
                                               await checkGps();
                                               setState(() {
                                                 isLocation = true;
                                               });
-
-                                              // _getCurrentLocation(context).then((value) {
-                                              //     lat = '${value.latitude}';
-
-                                              //     long = '${value.longitude}';
-                                              //     log(lat);
-                                              //     log(long);
-                                              //     location = true;
-                                              //     setState(() {});
-                                              //   });
                                             },
                                             child: Container(
-                                              child: Center(
-                                                  child: Text(
-                                                "Pick Location",
-                                                style: TextStyle(fontSize: 18),
-                                              )),
                                               height: 65,
                                               width: double.infinity,
                                               decoration: BoxDecoration(
-                                                  color: Colors.grey.shade100,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  border: Border.all()),
-                                            )),
+                                                color: Colors.grey.shade100,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  "Pick Location",
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                     const SizedBox(height: 20),
                                     SizedBox(
                                       width: 300,
                                       child: Text(
+                                        address,
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.white),
-                                        address,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                     const SizedBox(height: 20),
-                                    SizedBox(
-                                      height: 40,
-                                    ),
+                                    SizedBox(height: 40),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -467,27 +439,32 @@ class _MyRegisterState extends State<MyRegister> {
                                         Text(
                                           'Sign Up',
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 27,
-                                              fontWeight: FontWeight.w700),
+                                            color: Colors.white,
+                                            fontSize: 27,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
                                         CircleAvatar(
                                           radius: 30,
-                                          backgroundColor: Color(0xff4c505b),
-                                          child: IconButton(
-                                              color: Colors.white,
-                                              onPressed: () {
-                                                signUp(context);
-                                              },
-                                              icon: Icon(
-                                                Icons.arrow_forward,
-                                              )),
-                                        )
+                                          backgroundColor: Color(0xffffffff),
+                                          child: isRegister
+                                              ? CircularProgressIndicator(
+                                                  color: Colors.black)
+                                              : IconButton(
+                                                  color: Colors.black,
+                                                  onPressed: () async {
+                                                    if (_signUpKey.currentState!
+                                                        .validate()) {
+                                                      await signUp(context);
+                                                    }
+                                                  },
+                                                  icon:
+                                                      Icon(Icons.arrow_forward),
+                                                ),
+                                        ),
                                       ],
                                     ),
-                                    SizedBox(
-                                      height: 40,
-                                    ),
+                                    SizedBox(height: 40),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -500,18 +477,19 @@ class _MyRegisterState extends State<MyRegister> {
                                             'Sign In',
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                color: Colors.white,
-                                                fontSize: 18),
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                            ),
                                           ),
                                           style: ButtonStyle(),
                                         ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),

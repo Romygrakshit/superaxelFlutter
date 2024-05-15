@@ -20,4 +20,8 @@ class Globals {
   static String subAdminState = '';
   static String subAdminDeviceToken = '';
   static String subAdminMobileNumber = '';
+
+  // Inventry values by car_id
+  static String leftAxlePrice = "";
+  static String rightAxlePrice = "";
 }
