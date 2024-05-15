@@ -419,6 +419,16 @@ class _NewEnquiriesState extends State<NewEnquiries> {
                                         content:
                                             Text("Please select car axle")),
                                   );
+                                } else if (files.isEmpty || files.length == 0) {
+                                  EnquiryService.createEnquiryWithoutImage(
+                                      address,
+                                      lat.toString(),
+                                      long.toString(),
+                                      _selectedCompany.toString(),
+                                      _selectedCarName.toString(),
+                                      _selectedAxel.toString(),
+                                      priceOfEnquiry,
+                                      context);
                                 } else {
                                   submitEnquiry(context);
                                 }

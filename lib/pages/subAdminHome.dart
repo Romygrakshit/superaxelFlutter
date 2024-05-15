@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:loginuicolors/pages/SubAdminProfile.dart';
 import 'package:loginuicolors/pages/createInventory.dart';
 import 'package:loginuicolors/pages/product_form_subadmin.dart';
@@ -35,6 +36,34 @@ class _SubAdminHomeState extends State<SubAdminHome> {
     ProductFormSubAdmin(),
     SubAdminProfile()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    checkForUpdate();
+  }
+
+  Future<void> checkForUpdate() async {
+    print('checking for Update');
+    InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+          print('update available');
+          update();
+        }
+      });
+    }).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  void update() async {
+    print('Updating');
+    await InAppUpdate.startFlexibleUpdate();
+    InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
+      print(e.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
