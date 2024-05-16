@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:loginuicolors/pages/NewEnquiry.dart';
 import 'package:loginuicolors/pages/PastEnquiries.dart';
 import 'package:loginuicolors/pages/Profile.dart';
@@ -35,32 +34,6 @@ class _HomePageState extends State<HomePage> {
     ProductForm(),
     Profile(),
   ];
-  @override
-  void initState() {
-    super.initState();
-    checkForUpdate();
-  }
-   Future<void> checkForUpdate() async {
-    print('checking for Update');
-    InAppUpdate.checkForUpdate().then((info) {
-      setState(() {
-        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-          print('update available');
-          update();
-        }
-      });
-    }).catchError((e) {
-      print(e.toString());
-    });
-  }
-   void update() async {
-    print('Updating');
-    await InAppUpdate.startFlexibleUpdate();
-    InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
-      print(e.toString());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
