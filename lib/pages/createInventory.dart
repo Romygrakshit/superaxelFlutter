@@ -105,7 +105,7 @@ class _CreateInventoryState extends State<CreateInventory> {
                     print(_carId.runtimeType);
                     carSelected = true;
                   });
-                  await SubAdminService.getInventry(_carId!,context);
+                  await SubAdminService.getInventry(_carId!, context);
                   setState(() {
                     leftPrice.text = Globals.leftAxlePrice;
                     rightprice.text = Globals.rightAxlePrice;
@@ -123,12 +123,6 @@ class _CreateInventoryState extends State<CreateInventory> {
                     TextFormField(
                       keyboardType: TextInputType.number,
                       readOnly: true,
-                      validator: (value) {
-                        if (value!.length > 1)
-                          return null;
-                        else
-                          return "Enter the value";
-                      },
                       controller: leftPrice,
                       decoration: InputDecoration(
                           labelText: 'Left Axel Price',
@@ -156,12 +150,6 @@ class _CreateInventoryState extends State<CreateInventory> {
                     TextFormField(
                       keyboardType: TextInputType.number,
                       readOnly: true,
-                      validator: (value) {
-                        if (value!.length > 1)
-                          return null;
-                        else
-                          return "Enter the value";
-                      },
                       controller: rightprice,
                       decoration: InputDecoration(
                           labelText: 'Right Axel Price',

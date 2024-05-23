@@ -84,7 +84,7 @@ class _NewEnquiriesState extends State<NewEnquiries> {
           await FilePicker.platform.pickFiles(allowMultiple: true);
 
       if (result != null) {
-        files = result.paths.map((path) => File(path.toString())).toList();
+        files = result.paths.map((path) => File(path!)).toList();
         setState(() {});
       }
     } catch (e) {

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:loginuicolors/models/pastEnquiry.dart';
-import 'package:loginuicolors/services/firebase_messaging.dart';
 import 'package:loginuicolors/utils/Globals.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -48,8 +47,6 @@ class EnquiryService {
       String axel,
       String offeredPrice,
       BuildContext context) async {
-    PushNotifications pushNotification = PushNotifications();
-
     var uri = Uri.parse('$_baseUrl/create');
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
@@ -90,23 +87,6 @@ class EnquiryService {
         var decoded = jsonDecode(value);
         print(decoded);
         if (response.statusCode == 200) {
-          pushNotification.getDeviceToken().then((value) async {
-            var data = {
-              'to': value,
-              'priority': 'high',
-              'notification': {
-                'title': 'New Enquiry',
-                'body': '${Globals.garageName}',
-              },
-            };
-            await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                body: jsonEncode(data),
-                headers: {
-                  'Content-Type': 'application/json; charset=UTF-8',
-                  'Authorization':
-                      'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
-                });
-          });
           showDialog(
             context: context,
             builder: (context) => toastMsg(context, "Enquiry Created"),
@@ -134,7 +114,6 @@ class EnquiryService {
       String axel,
       String offeredPrice,
       BuildContext context) async {
-    PushNotifications pushNotification = PushNotifications();
     try {
       final response = await http.post(Uri.parse('$_baseUrl/create'), body: {
         "garage_id": Globals.garageId.toString(),
@@ -150,23 +129,6 @@ class EnquiryService {
       var decoded = jsonDecode(response.body);
       print(decoded);
       if (response.statusCode == 200) {
-        pushNotification.getDeviceToken().then((value) async {
-          var data = {
-            'to': value,
-            'priority': 'high',
-            'notification': {
-              'title': 'New Enquiry',
-              'body': '${Globals.garageName}',
-            },
-          };
-          await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
-              body: jsonEncode(data),
-              headers: {
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization':
-                    'key=AAAAp4Lx0M8:APA91bEfrvJmS8721wom0MdZd6H6tw9zHnZwISQAMhY_Kd6VhDq20nCS5DX9Q8ONMcKx1IdEdHyAer5eg5taSnUqBIFHZC_2lwqer0VltONmpyHjpnyA3z2TvBepgIXEdkSuBinu-E95'
-              });
-        });
         showDialog(
           context: context,
           builder: (context) => toastMsg(context, "Enquiry Created"),
